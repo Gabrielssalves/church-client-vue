@@ -1,8 +1,15 @@
 import axios, { type AxiosError, type AxiosRequestConfig, type InternalAxiosRequestConfig } from 'axios'
 import { useAuthStore } from '@/stores/authStore'
 
+const BASE_URL = 'https://auth-server-aj4e.onrender.com/auth'
+
 const api = axios.create({
-  baseURL: 'https://auth-server-aj4e.onrender.com/auth',
+  baseURL: BASE_URL,
+  withCredentials: true
+})
+
+const refreshApi = axios.create({
+  baseURL: BASE_URL,
   withCredentials: true
 })
 
@@ -30,7 +37,7 @@ api.interceptors.response.use(
         isRefreshing = true
 
         try {
-          const { data } = await axios.post(
+          const { data } = await refreshApi.post(
             '/refresh',
             {},
             { withCredentials: true }

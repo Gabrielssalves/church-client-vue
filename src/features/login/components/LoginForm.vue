@@ -2,9 +2,11 @@
 import { ref } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import { useRouter } from 'vue-router'
+import Logo from './Logo.vue'
 
 const email = ref('')
 const password = ref('')
+const rememberMe = ref(false)
 const router = useRouter()
 
 const { login, loading, error } = useAuth()
@@ -18,6 +20,11 @@ async function handleLogin() {
 
     router.push('/dashboard')
   } catch {}
+}
+
+function handleSocialLogin(provider) {
+  // TODO: implement social login
+  console.log('Social login:', provider)
 }
 </script>
 
