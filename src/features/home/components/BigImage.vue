@@ -1,13 +1,13 @@
 <template>
-  <div class="logo">
-    <img src="@/assets/logo_vazado800X400.png" alt="Site Logo" />
+  <div class="big-image">
+    <img src="@/assets/undraw_building-websites_k2zp.svg" alt="Ideas Image" />
   </div>
 </template>
 
 <style scoped>
-.logo {
-  width: 250px;
-  height: 125px;
+.big-image {
+  width: 50%;
+  height: 50%;
   display: flex;
   align-items: center;
   justify-content: center;

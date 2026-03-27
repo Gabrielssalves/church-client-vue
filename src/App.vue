@@ -13,24 +13,7 @@
 </script>
 
 <style>
-#app {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-  font-family: 'Arial', sans-serif;
-}
-
-.app-main {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #f4f4f4;
-  padding: 2rem;
-}
-
 .app-footer {
-  background-color: #f4f4f4;
   text-align: center;
   padding: 1rem;
   font-size: 0.9rem;

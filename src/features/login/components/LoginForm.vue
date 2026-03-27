@@ -18,7 +18,7 @@ async function handleLogin() {
       password: password.value
     })
 
-    router.push('/dashboard')
+    router.push('/home')
   } catch {}
 }
 
@@ -67,7 +67,7 @@ function handleSocialLogin(provider) {
         <a href="#" class="forgot-password">Forgot password?</a>
       </div>
 
-      <button type="submit" class="btn-primary">Sign In</button>
+      <button type="submit" class="btn-primary">Login</button>
     </form>
 
     <div class="divider">
