@@ -103,7 +103,7 @@ import LoginForm from '../components/LoginForm.vue'
 }
 
 .right-panel {
-  background: var(--color-bg-contrast);
+  background: white;
   display: flex;
   flex-direction: column;
   justify-content: center;

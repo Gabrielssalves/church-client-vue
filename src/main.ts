@@ -18,3 +18,8 @@ await authStore.tryRestoreSession()
 app.use(router)
 
 app.mount('#app')
+
+const preloader = document.getElementById('preloader')
+if (preloader) {
+  preloader.remove()
+}

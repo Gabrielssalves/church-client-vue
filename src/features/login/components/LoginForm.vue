@@ -67,8 +67,13 @@ function handleSocialLogin(provider) {
         <a href="#" class="forgot-password">Forgot password?</a>
       </div>
 
-      <button type="submit" class="btn-primary">Login</button>
+      <button type="submit" class="btn-primary" :disabled="loading">
+        <span v-if="!loading">Login</span>
+        <span v-else class="button-spinner" aria-hidden="true"></span>
+      </button>
     </form>
+
+    <p v-if="error" class="form-error">{{ error?.message || error }}</p>
 
     <div class="divider">
       <span class="divider-text">or continue with</span>
@@ -118,7 +123,7 @@ form {
 .form-input {
   width: 100%;
   padding: 0.875rem 1rem;
-  border: 1px solid #E2E8F0;
+  border: 1px solid var(--color-primary);
   border-radius: 8px;
   font-size: 1rem;
   background: white;
@@ -129,7 +134,7 @@ form {
 .form-input:focus {
   outline: none;
   border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(20, 167, 74, 0.1);
+  box-shadow: 0 0 0 5px rgba(14, 133, 58, 0.1);
 }
 
 .form-options {
@@ -175,23 +180,46 @@ form {
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
   margin-bottom: 2rem;
   font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
 }
 
 .btn-primary:hover {
   background: var(--color-primary-dark);
 }
 
+.btn-primary:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.button-spinner {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-top-color: rgba(255, 255, 255, 0.95);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 .divider {
   display: flex;
   align-items: center;
-  text-align: center;
+  gap: 1rem;
   margin-bottom: 1.5rem;
 }
 
-.divider::before, .divider::after {
+.divider::before,
+.divider::after {
   content: '';
   flex: 1;
   border-bottom: 1px solid #E2E8F0;
@@ -204,11 +232,17 @@ form {
   white-space: nowrap;
 }
 
+.form-error {
+  color: #dc2626;
+  font-size: 0.95rem;
+  margin: 0 0 1rem;
+}
+
 .btn-social {
   width: 100%;
   padding: 0.875rem;
   background: white;
-  border: 1px solid #E2E8F0;
+  border: 2px solid #E2E8F0;
   border-radius: 8px;
   font-size: 0.9375rem;
   font-weight: 500;

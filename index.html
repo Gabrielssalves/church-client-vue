@@ -5,8 +5,55 @@
     <link rel="icon" href="/favicon.ico">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vite App</title>
+    <style>
+      html, body {
+        margin: 0;
+        min-height: 100%;
+        background: #F2F6F3;
+        color: #2D3748;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      }
+      #preloader {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: #F2F6F3;
+        color: #2D3748;
+        z-index: 9999;
+      }
+      .preloader-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        padding: 2.5rem 3rem;
+        border-radius: 1rem;
+        background: #FFFFFF;
+        border: 1px solid #E2E8F0;
+        box-shadow: 0 20px 40px rgba(45, 55, 72, 0.12);
+      }
+      .preloader-spinner,
+      .button-spinner {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        border: 3px solid rgba(20, 167, 74, 0.15);
+        border-top-color: #14A74A;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
   </head>
   <body>
+    <div id="preloader">
+      <div class="preloader-content">
+        <div class="preloader-spinner"></div>
+        <p>Carregando...</p>
+      </div>
+    </div>
     <div id="app"></div>
     <script type="module" src="/src/main.ts"></script>
   </body>

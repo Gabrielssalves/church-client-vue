@@ -3,9 +3,6 @@
     <main class="app-main">
       <router-view />
     </main>
-    <footer class="app-footer">
-      &copy; 2026 MeuSite. Todos os direitos reservados.
-    </footer>
   </div>
 </template>
 
