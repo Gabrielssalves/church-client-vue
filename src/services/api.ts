@@ -8,24 +8,8 @@ const api = axios.create({
   withCredentials: true
 })
 
-const refreshApi = axios.create({
-  baseURL: BASE_URL,
-  withCredentials: true
-})
-
-api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  const authStore = useAuthStore()
-
-  if (authStore.accessToken) {
-    if (!config.headers) config.headers = {} as any
-    (config.headers as Record<string, string>).Authorization = `Bearer ${authStore.accessToken}`
-  }
-
-  return config
-})
-
 let isRefreshing = false
-let queue: Array<(token: string) => void> = []
+let queue: Array<{ resolve: (value: unknown) => void; reject: (reason?: any) => void }> = []
 
 api.interceptors.response.use(
   response => response,
@@ -37,18 +21,12 @@ api.interceptors.response.use(
         isRefreshing = true
 
         try {
-          const { data } = await refreshApi.post(
-            '/refresh',
-            {},
-            { withCredentials: true }
-          )
-
-          authStore.setAccessToken(data.accessToken)
-
-          queue.forEach(cb => cb(data.accessToken))
+          await authStore.tryRestoreSession()
+          queue.forEach(entry => entry.resolve(null))
           queue = []
-
         } catch (err) {
+          queue.forEach(entry => entry.reject(err))
+          queue = []
           authStore.logout()
           return Promise.reject(err)
         } finally {
@@ -60,14 +38,9 @@ api.interceptors.response.use(
         if (!error.config) return reject(error)
 
         const retryConfig = error.config
-
-        queue.push((token) => {
-          if (!retryConfig.headers) {
-            retryConfig.headers = {} as any
-          }
-
-          (retryConfig.headers as Record<string, string>).Authorization = `Bearer ${token}`
-          resolve(api(retryConfig as AxiosRequestConfig))
+        queue.push({
+          resolve: () => resolve(api(retryConfig as AxiosRequestConfig)),
+          reject
         })
       })
     }

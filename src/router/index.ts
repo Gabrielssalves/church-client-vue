@@ -37,10 +37,6 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
-  if (authStore.accessToken === undefined) {
-    next('/login')
-  }
-
   const requiresAuth = to.meta.requiresAuth
   const isAuthenticated = authStore.isAuthenticated
 
