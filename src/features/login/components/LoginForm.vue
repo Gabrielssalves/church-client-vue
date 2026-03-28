@@ -18,8 +18,10 @@ async function handleLogin() {
       password: password.value
     })
 
-    router.push('/home')
-  } catch {}
+    await router.replace({ name: 'Home' })
+  } catch (err) {
+    console.error('Login failed', err)
+  }
 }
 
 function handleSocialLogin(provider) {
