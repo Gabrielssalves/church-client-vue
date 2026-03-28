@@ -21,6 +21,11 @@ const routes = [
     name: 'Home',
     component: () => import('@/features/home/pages/HomePage.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/draw',
+    name: 'Draw',
+    component: () => import('@/features/teams/pages/DrawPage.vue'),
   }
 ]
 
@@ -33,7 +38,7 @@ router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
   if (authStore.accessToken === undefined) {
-    await authStore.tryRestoreSession()
+    next('/login')
   }
 
   const requiresAuth = to.meta.requiresAuth
