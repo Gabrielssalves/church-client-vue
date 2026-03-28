@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 
 const routes = [
@@ -13,10 +13,6 @@ const routes = [
     redirect: '/home'
   },
   {
-    path: '/:pathMatch(.*)*',
-    redirect: '/home'
-  },
-  {
     path: '/home',
     name: 'Home',
     component: () => import('@/features/home/pages/HomePage.vue'),
@@ -26,11 +22,15 @@ const routes = [
     path: '/draw',
     name: 'Draw',
     component: () => import('@/features/teams/pages/DrawPage.vue'),
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/home'
   }
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes
 })
 
