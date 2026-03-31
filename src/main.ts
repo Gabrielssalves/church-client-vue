@@ -13,7 +13,7 @@ app.use(createPinia())
 
 const authStore = useAuthStore()
 
-await authStore.tryRestoreSession()
+authStore.initialize()
 
 app.use(router)
 

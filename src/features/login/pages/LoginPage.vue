@@ -23,8 +23,10 @@ import LoginForm from '../components/LoginForm.vue'
 .login-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  min-height: 50vh;
-  padding: 4rem 20rem 0 20rem;
+  min-height: 100vh;
+  height: 100vh;
+  padding: 0;
+  width: 100%;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
@@ -38,8 +40,7 @@ import LoginForm from '../components/LoginForm.vue'
   align-items: center;
   padding: 4rem;
   overflow: hidden;
-  border-radius: 5p;
-  border-radius: 30px 0 0 30px;
+  border-radius: 0;
 }
 
 .left-panel::before, .left-panel::after {
@@ -109,7 +110,7 @@ import LoginForm from '../components/LoginForm.vue'
   justify-content: center;
   align-items: center;
   padding: 4rem;
-  border-radius: 0 30px 30px 0;
+  border-radius: 0;
 }
 
 .login-form-wrapper {

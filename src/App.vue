@@ -1,13 +1,10 @@
-<template>
-  <div id="app">
-    <main class="app-main">
-      <router-view />
-    </main>
-  </div>
-</template>
-
 <script setup>
+import MainLayout from '@/layouts/MainLayout.vue'
 </script>
+
+<template>
+  <MainLayout />
+</template>
 
 <style>
 .app-footer {

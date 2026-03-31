@@ -6,7 +6,7 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: () => import('@/features/login/pages/LoginPage.vue'),
-    meta: { requiresAuth: false }
+    meta: { requiresAuth: false, label: 'Login', showInSidebar: false, hideSidebar: true }
   },
   {
     path: '/',
@@ -16,12 +16,26 @@ const routes = [
     path: '/home',
     name: 'Home',
     component: () => import('@/features/home/pages/HomePage.vue'),
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, label: 'Home', showInSidebar: false }
+  },
+  {
+    path: '/musicians',
+    name: 'Musicians',
+    component: () => import('@/features/musicians/MusiciansView.vue'),
+    meta: { requiresAuth: true, label: 'Músicos' }
   },
   {
     path: '/draw',
     name: 'Draw',
-    component: () => import('@/features/teams/pages/DrawPage.vue'),
+    meta: { requiresAuth: true, label: 'Sorteio' },
+    children: [
+      {
+        path: '',
+        name: 'TeamsDraw',
+        component: () => import('@/features/teams/pages/DrawPage.vue'),
+        meta: { label: 'Sorteio de Times' }
+      },
+    ]
   },
   {
     path: '/:pathMatch(.*)*',
@@ -41,12 +55,21 @@ router.beforeEach(async (to, from, next) => {
   const isAuthenticated = authStore.isAuthenticated
 
   if (requiresAuth && !isAuthenticated) {
-    next('/login')
-  } else if (!requiresAuth && isAuthenticated && to.path === '/login') {
-    next('/home')
-  } else {
-    next()
+    if (!authStore.sessionChecked) {
+      const restored = await authStore.tryRestoreSession()
+      if (restored) {
+        return next()
+      }
+    }
+
+    return next('/login')
   }
+
+  if (!requiresAuth && isAuthenticated && to.path === '/login') {
+    return next('/home')
+  }
+
+  next()
 })
 
 export default router
