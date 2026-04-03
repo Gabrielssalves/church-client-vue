@@ -43,6 +43,11 @@ export async function login(payload: AuthPayload): Promise<AuthResponse> {
   return normalizeAuthResponse(data)
 }
 
+export async function loginWithGoogle(token: string): Promise<AuthResponse> {
+  const { data } = await authApi.post('/google', { token })
+  return normalizeAuthResponse(data)
+}
+
 export async function refresh(): Promise<AuthResponse> {
   const { data } = await authApi.post('/refresh')
   return normalizeAuthResponse(data)

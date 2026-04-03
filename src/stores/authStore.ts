@@ -42,6 +42,15 @@ export const useAuthStore = defineStore('auth', {
         localStorage.setItem('authUser', JSON.stringify(data.user))
       }
     },
+    async loginWithGoogle(token: string) {
+      const data = await authServer.loginWithGoogle(token)
+      this.user = data.user
+      this.sessionChecked = true
+
+      if (data.user) {
+        localStorage.setItem('authUser', JSON.stringify(data.user))
+      }
+    },
 
     async tryRestoreSession() {
       this.sessionChecked = true

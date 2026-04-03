@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import { useRouter } from 'vue-router'
 import Logo from './Logo.vue'
+import GoogleLoginButton from './GoogleLoginButton.vue'
 
 const email = ref('')
 const password = ref('')
@@ -24,10 +25,6 @@ async function handleLogin() {
   }
 }
 
-function handleSocialLogin(provider) {
-  // TODO: implement social login
-  console.log('Social login:', provider)
-}
 </script>
 
 <template>
@@ -81,10 +78,7 @@ function handleSocialLogin(provider) {
       <span class="divider-text">or continue with</span>
     </div>
 
-    <button class="btn-social" @click="handleSocialLogin('google')">
-      <span class="social-icon">G</span>
-      Continue with Google
-    </button>
+    <GoogleLoginButton class="btn-google" />
   </div>
 </template>
 
@@ -240,39 +234,8 @@ form {
   margin: 0 0 1rem;
 }
 
-.btn-social {
-  width: 100%;
-  padding: 0.875rem;
-  background: white;
-  border: 2px solid #E2E8F0;
-  border-radius: 8px;
-  font-size: 0.9375rem;
-  font-weight: 500;
-  color: var(--color-text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  cursor: pointer;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
-  font-family: inherit;
-}
-
-.btn-social:hover {
-  border-color: var(--color-primary);
-  background: rgba(20, 167, 74, 0.02);
-}
-
-.social-icon {
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 2px;
-  background: #EA4335;
-  color: white;
-  font-size: 0.875rem;
-  font-weight: 600;
+.btn-google {
+  position: relative;
+  margin-bottom: 2.25rem;
 }
 </style>

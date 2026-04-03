@@ -22,6 +22,20 @@ export function useAuth() {
     }
   }
 
+  async function loginWithGoogle(token) {
+    try {
+      loading.value = true
+      error.value = null
+
+      await authStore.loginWithGoogle(token)
+
+    } catch (err) {
+      error.value = err
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
   async function logout() {
     await authStore.logout()
   }
@@ -32,6 +46,7 @@ export function useAuth() {
     loading,
     error,
     login,
+    loginWithGoogle,
     logout
   }
 }
