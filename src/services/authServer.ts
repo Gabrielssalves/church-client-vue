@@ -1,8 +1,7 @@
 import axios from 'axios'
 
-const BASE_URL = 'https://auth-server-aj4e.onrender.com/auth'
 const authApi = axios.create({
-  baseURL: BASE_URL,
+  baseURL: import.meta.env.VITE_AUTH_BASE_URL,
   withCredentials: true
 })
 

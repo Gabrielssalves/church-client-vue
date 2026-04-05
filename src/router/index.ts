@@ -16,24 +16,24 @@ const routes = [
     path: '/home',
     name: 'Home',
     component: () => import('@/features/home/pages/HomePage.vue'),
-    meta: { requiresAuth: true, label: 'Home', showInSidebar: false }
+    meta: { requiresAuth: true, label: 'Home', showInSidebar: false, icon: 'home' }
   },
   {
     path: '/musicians',
     name: 'Musicians',
     component: () => import('@/features/musicians/MusiciansView.vue'),
-    meta: { requiresAuth: true, label: 'Músicos' }
+    meta: { requiresAuth: true, label: 'Músicos', icon: 'musicians' }
   },
   {
     path: '/draw',
     name: 'Draw',
-    meta: { requiresAuth: true, label: 'Sorteio' },
+    meta: { requiresAuth: true, label: 'Sorteio', icon: 'draw' },
     children: [
       {
         path: '',
         name: 'TeamsDraw',
         component: () => import('@/features/teams/pages/DrawPage.vue'),
-        meta: { label: 'Sorteio de Times' }
+        meta: { label: 'Sorteio de Times', icon: 'users' }
       },
     ]
   },

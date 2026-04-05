@@ -8,10 +8,10 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
-import Sidebar from '@/components/Sidebar.vue'
+import Sidebar from '@/components/sidebar/Sidebar.vue'
 
 const isCollapsed = ref(false)
 const route = useRoute()
@@ -33,7 +33,7 @@ function toggleSidebar() {
 .layout-main {
   margin-left: 260px;
   padding: 28px;
-  transition: margin-left 0.25s ease;
+  transition: margin-left 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .layout-shell.collapsed .layout-main {

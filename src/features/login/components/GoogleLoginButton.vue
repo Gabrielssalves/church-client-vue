@@ -7,10 +7,6 @@
   const { loginWithGoogle } = useAuth()
   const router = useRouter()
 
-  onMounted(() => {
-    window.handleCredentialResponse = handleCredentialResponse;
-  });
-
   function init() {
     globalThis.google.accounts.id.initialize({
       client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
