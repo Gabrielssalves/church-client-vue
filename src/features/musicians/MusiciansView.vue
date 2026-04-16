@@ -122,8 +122,8 @@ const musicians = ref<Musician[]>([
   }
 ])
 
-function handleAdd() {
-  console.log('Abrir modal')
+function handleAdd(): void {
+  // TODO: open "Add Musician" modal — requires modal component and musician store
 }
 </script>
 

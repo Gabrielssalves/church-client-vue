@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import type { PropType } from 'vue'
 import type { Group } from '../composables/useDraw'
 
-const props = defineProps({
-  endpoint: String,
-  namesInput: String,
-  groupsList: { type: Array as PropType<Group[]>, required: true }
-})
+defineProps<{
+  endpoint?: string
+  namesInput?: string
+  groupsList: Group[]
+}>()
 
 const emit = defineEmits<{
   (event: 'update:endpoint', value: string): void
@@ -17,39 +16,46 @@ const emit = defineEmits<{
   (event: 'submit'): void
 }>()
 
-const handleSubmit = () => emit('submit')
-const updateEndpoint = (event: Event) => {
-  const value = (event.target as HTMLInputElement)?.value
-  emit('update:endpoint', value)
+function handleSubmit(): void {
+  emit('submit')
 }
-const updateNamesInput = (event: Event) => {
-  const value = (event.target as HTMLTextAreaElement)?.value
-  emit('update:namesInput', value)
+
+function updateEndpoint(event: Event): void {
+  emit('update:endpoint', (event.target as HTMLInputElement).value)
 }
-const updateGroupName = (index: number, value: string) => {
-  emit('update:group', { index, field: 'name', value })
+
+function updateNamesInput(event: Event): void {
+  emit('update:namesInput', (event.target as HTMLTextAreaElement).value)
 }
-const updateGroupColor = (index: number, value: string) => {
-  emit('update:group', { index, field: 'color', value })
+
+function updateGroupName(index: number, event: Event): void {
+  emit('update:group', { index, field: 'name', value: (event.target as HTMLInputElement).value })
+}
+
+function updateGroupColor(index: number, event: Event): void {
+  emit('update:group', { index, field: 'color', value: (event.target as HTMLInputElement).value })
 }
 </script>
 
 <template>
   <main class="draw-form-card">
     <div class="form-section">
-      <label class="label">Endpoint da API (Opcional)</label>
+      <label class="label" for="draw-endpoint">Endpoint da API (Opcional)</label>
       <input
+        id="draw-endpoint"
         type="text"
         class="input-field"
         :value="endpoint"
         @input="updateEndpoint"
         placeholder="https://sua-api.com/sorteio"
+        autocomplete="off"
       />
     </div>
 
     <div class="form-section">
-      <label class="label">Participantes</label>
+      <label class="label" for="draw-participants">Participantes</label>
       <textarea
+        id="draw-participants"
         class="textarea-field"
         rows="4"
         :value="namesInput"
@@ -59,41 +65,52 @@ const updateGroupColor = (index: number, value: string) => {
     </div>
 
     <div class="form-section">
-      <label class="label">Configuração de Grupos</label>
+      <p class="label" id="groups-label">Configuração de Grupos</p>
 
       <div
         v-for="(group, index) in groupsList"
         :key="index"
         class="group-row"
+        role="group"
+        :aria-label="`Grupo ${index + 1}`"
       >
         <div class="color-picker-wrapper" :style="{ borderColor: group.color }">
+          <label :for="`group-color-${index}`" class="visually-hidden">
+            Cor do grupo {{ index + 1 }}
+          </label>
           <input
+            :id="`group-color-${index}`"
             type="color"
             class="color-input"
             :value="group.color"
-            @input="event => updateGroupColor(index, (event.target as HTMLInputElement).value)"
+            @input="(event) => updateGroupColor(index, event)"
           />
         </div>
 
+        <label :for="`group-name-${index}`" class="visually-hidden">
+          Nome do grupo {{ index + 1 }}
+        </label>
         <input
+          :id="`group-name-${index}`"
           type="text"
           class="input-field flex-1"
           :value="group.name"
-          @input="event => updateGroupName(index, (event.target as HTMLInputElement).value)"
+          @input="(event) => updateGroupName(index, event)"
           placeholder="Nome do Grupo"
         />
 
         <button
+          v-if="groupsList.length > 1"
           type="button"
           class="btn-remove"
-          @click="() => emit('remove-group', index)"
-          v-if="groupsList.length > 1"
+          :aria-label="`Remover grupo ${index + 1}`"
+          @click="emit('remove-group', index)"
         >
           Excluir
         </button>
       </div>
 
-      <button type="button" class="btn-add-group" @click="() => emit('add-group')">
+      <button type="button" class="btn-add-group" @click="emit('add-group')">
         + Adicionar novo grupo
       </button>
     </div>
@@ -139,6 +156,7 @@ const updateGroupColor = (index: number, value: string) => {
   border: 1px solid var(--color-primary);
   color: #2D3748;
   font-size: 1rem;
+  font-family: inherit;
   transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
@@ -171,6 +189,7 @@ const updateGroupColor = (index: number, value: string) => {
   border-radius: 18px;
   overflow: hidden;
   border: 2px solid #E2E8F0;
+  flex-shrink: 0;
 }
 
 .color-input {
@@ -191,6 +210,7 @@ const updateGroupColor = (index: number, value: string) => {
   border-radius: 16px;
   cursor: pointer;
   font-weight: 700;
+  font-family: inherit;
 }
 
 .btn-remove:hover {
@@ -206,22 +226,37 @@ const updateGroupColor = (index: number, value: string) => {
   color: #4A5568;
   font-weight: 700;
   cursor: pointer;
+  font-family: inherit;
 }
 
 .btn-primary {
   width: 100%;
   padding: 18px;
-  background: #14A74A;
+  background: var(--color-primary);
   border: none;
   color: white;
   border-radius: 18px;
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
+  font-family: inherit;
   transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
 .btn-primary:hover {
-  background: #0E7A36;
+  background: var(--color-primary-dark);
+}
+
+/* Accessible visually-hidden utility */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 </style>

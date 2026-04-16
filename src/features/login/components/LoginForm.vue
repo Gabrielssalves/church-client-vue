@@ -1,30 +1,31 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import { useAuth } from '@/composables/useAuth'
 import { useRouter } from 'vue-router'
 import Logo from './Logo.vue'
 import GoogleLoginButton from './GoogleLoginButton.vue'
+import type { LoginCredentials } from '@/types/auth'
 
 const email = ref('')
 const password = ref('')
 const rememberMe = ref(false)
 const router = useRouter()
 
-const { login, loading, error } = useAuth()
+const { login, isLoading, error } = useAuth()
 
-async function handleLogin() {
+async function handleLogin(): Promise<void> {
+  const credentials: LoginCredentials = {
+    email: email.value,
+    password: password.value,
+  }
+
   try {
-    await login({
-      email: email.value,
-      password: password.value
-    })
-
-    await router.replace({ name: 'Home' })
-  } catch (err) {
-    console.error('Login failed', err)
+    await login(credentials)
+    await router.replace({ name: 'Dashboard' })
+  } catch {
+    // error is already set on the store via useAuth — rendered below
   }
 }
-
 </script>
 
 <template>
@@ -32,29 +33,31 @@ async function handleLogin() {
     <Logo />
     <h2 class="form-title">Login</h2>
     <p class="form-subtitle">Enter your credentials to access your account</p>
-    
-    <form @submit.prevent="handleLogin">
+
+    <form @submit.prevent="handleLogin" novalidate>
       <div class="form-group">
-        <label class="form-label" for="email">Email Address</label>
-        <input 
-          class="form-input" 
-          type="email" 
-          id="email" 
+        <label class="form-label" for="login-email">Email Address</label>
+        <input
+          class="form-input"
+          type="email"
+          id="login-email"
           v-model="email"
-          placeholder="you@example.com" 
-          required 
+          placeholder="you@example.com"
+          autocomplete="email"
+          required
         />
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="password">Password</label>
-        <input 
-          class="form-input" 
-          type="password" 
-          id="password" 
+        <label class="form-label" for="login-password">Password</label>
+        <input
+          class="form-input"
+          type="password"
+          id="login-password"
           v-model="password"
-          placeholder="••••••••" 
-          required 
+          placeholder="••••••••"
+          autocomplete="current-password"
+          required
         />
       </div>
 
@@ -66,15 +69,15 @@ async function handleLogin() {
         <a href="#" class="forgot-password">Forgot password?</a>
       </div>
 
-      <button type="submit" class="btn-primary" :disabled="loading">
-        <span v-if="!loading">Login</span>
+      <button type="submit" class="btn-primary" :disabled="isLoading">
+        <span v-if="!isLoading">Login</span>
         <span v-else class="button-spinner" aria-hidden="true"></span>
       </button>
     </form>
 
-    <p v-if="error" class="form-error">{{ error?.message || error }}</p>
+    <p v-if="error" role="alert" class="form-error">{{ error.message }}</p>
 
-    <div class="divider">
+    <div class="divider" aria-hidden="true">
       <span class="divider-text">or continue with</span>
     </div>
 
@@ -185,7 +188,7 @@ form {
   gap: 0.75rem;
 }
 
-.btn-primary:hover {
+.btn-primary:hover:not(:disabled) {
   background: var(--color-primary-dark);
 }
 

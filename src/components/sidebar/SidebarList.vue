@@ -1,5 +1,5 @@
 <template>
-    <ul class="sidebar-list">
+    <ul class="sidebar-list" :class="{ 'is-collapsed': props.collapsed }">
         <li v-for="route in visibleRoutes" :key="route.path" class="sidebar-item">
             <template v-if="!route.children || route.children.length === 0">
                 <RouterLink :to="route.path" class="sidebar-link" active-class="sidebar-link--active"
@@ -87,13 +87,14 @@ function getChildPath(parentPath: string, childPath: string) {
     flex-direction: column;
     flex: 1;
     margin: 0;
-    padding: 0;
+    padding: 10px 0;
 }
 
 .sidebar-item {
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 4px;
+    margin-bottom: 4px;
 }
 
 .sidebar-link,
@@ -101,27 +102,30 @@ function getChildPath(parentPath: string, childPath: string) {
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    width: 100%;
+    width: calc(100% - 34px);
+    margin: 0 17px;
+    border-radius: 5px;
     color: var(--color-text);
     background: transparent;
     border: 0;
     font-family: inherit;
     font-size: 0.95rem;
-    padding: 12px 12px;
+    padding: 4px 8px;
     text-decoration: none;
     font-weight: 600;
-    transition: background 0.2s ease, color 0.2s ease;
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.sidebar-link:hover,
+.sidebar-link:not(.sidebar-link--active):hover,
 .sidebar-toggle:hover {
-    background: rgba(20, 167, 74, 0.08);
+    background: rgba(148, 163, 184, 0.2);
     cursor: pointer;
 }
 
 .sidebar-link--active {
-    background: rgba(20, 167, 74, 0.18);
-    color: var(--color-primary-dark);
+    background: var(--color-primary);
+    color: var(--color-white);
+    box-shadow: inset 0 0 0 1px rgba(20, 167, 74, 0.3);
 }
 
 .sidebar-icon {
@@ -138,8 +142,30 @@ function getChildPath(parentPath: string, childPath: string) {
     display: inline-flex;
     align-items: center;
     line-height: 1;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
+    margin-left: 4px;
+}
+
+.sidebar-list.is-collapsed .sidebar-link,
+.sidebar-list.is-collapsed .sidebar-toggle {
+    width: 90%;
+    margin: 2px 3px;
+    padding: 2px 3px;
+    justify-content: center;
+}
+
+.sidebar-list.is-collapsed .sidebar-item {
+    margin-bottom: 0;
+}
+
+.sidebar-list.is-collapsed .sidebar-link .sidebar-icon,
+.sidebar-list.is-collapsed .sidebar-toggle .sidebar-icon {
+    margin-right: 0;
+}
+
+.sidebar-list.is-collapsed .sidebar-label {
+    margin-left: 0;
 }
 
 .chevron {
@@ -182,7 +208,7 @@ function getChildPath(parentPath: string, childPath: string) {
 .sidebar-link--child {
     font-size: 0.86rem;
     font-weight: 400;
-    padding-left: 12px;
+    padding-left: 16px;
 }
 
 .sidebar-link--child .sidebar-label {
@@ -191,12 +217,8 @@ function getChildPath(parentPath: string, childPath: string) {
 }
 
 .sidebar-link--child.sidebar-link--active {
-    background: transparent;
-    color: var(--color-text);
-}
-
-.sidebar-link--child.sidebar-link--active:hover {
-    background: rgba(20, 167, 74, 0.08);
+    background: var(--color-primary-dark);
+    color: var(--color-white);
 }
 
 .sidebar-empty {
@@ -206,23 +228,6 @@ function getChildPath(parentPath: string, childPath: string) {
     text-align: center;
 }
 
-:global(.sidebar.collapsed) .chevron,
-:global(.sidebar.collapsed) .sidebar-link .sidebar-label,
-:global(.sidebar.collapsed) .sidebar-toggle .sidebar-label,
-:global(.sidebar.collapsed) .sidebar-link--child .sidebar-label {
-    display: none;
-}
-
-:global(.sidebar.collapsed) .sidebar-link,
-:global(.sidebar.collapsed) .sidebar-toggle {
-    justify-content: center;
-    padding: 12px;
-    gap: 0;
-}
-
-:global(.sidebar.collapsed) .sidebar-icon {
-    margin-right: 0;
-}
 
 @media (max-width: 920px) {
 

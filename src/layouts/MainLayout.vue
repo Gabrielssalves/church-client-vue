@@ -31,13 +31,13 @@ function toggleSidebar() {
 }
 
 .layout-main {
-  margin-left: 260px;
+  margin-left: 248px;
   padding: 28px;
   transition: margin-left 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .layout-shell.collapsed .layout-main {
-  margin-left: 80px;
+  margin-left: 88px;
 }
 
 .layout-shell.no-sidebar .layout-main {

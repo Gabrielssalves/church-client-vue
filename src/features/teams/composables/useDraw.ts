@@ -83,20 +83,28 @@ export function useDraw() {
         })
 
         if (!response.ok) {
-          throw new Error('Erro na API.')
+          throw new Error(`Erro na API: ${response.status} ${response.statusText}`)
         }
 
-        teams.value = await response.json()
-        await new Promise((resolve) => setTimeout(resolve, 1500))
+        const contentType = response.headers.get('content-type') ?? ''
+        if (!contentType.includes('application/json')) {
+          throw new Error('A API não retornou JSON válido.')
+        }
+
+        teams.value = (await response.json()) as Team[]
+        await new Promise<void>((resolve) => setTimeout(resolve, 1500))
       } else {
-        await new Promise((resolve) => setTimeout(resolve, 1200))
+        await new Promise<void>((resolve) => setTimeout(resolve, 1200))
         teams.value = simularSorteio(namesList, validGroups)
       }
 
       iniciarApresentacao()
-    } catch (error) {
+    } catch (err) {
       status.value = 'idle'
-      errorMessage.value = 'Erro ao processar sorteio. Verifique os dados.'
+      errorMessage.value =
+        err instanceof Error
+          ? err.message
+          : 'Erro ao processar sorteio. Verifique os dados.'
     }
   }
 

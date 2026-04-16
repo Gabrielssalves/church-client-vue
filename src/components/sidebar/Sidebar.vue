@@ -17,9 +17,9 @@ import SidebarHeader from './SidebarHeader.vue'
 import SidebarList from './SidebarList.vue'
 import SidebarFooter from './SidebarFooter.vue'
 
-const props = defineProps({
-  collapsed: Boolean
-})
+const props = defineProps<{
+  collapsed: boolean
+}>()
 
 const emit = defineEmits<{
   (event: 'toggle'): void
@@ -51,21 +51,20 @@ function handleLogout() {
   top: 0;
   left: 0;
   bottom: 0;
-  width: 230px;
+  width: 258px;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
-  padding-top: 4px;
+  padding-top: 6px;
   background: var(--color-white);
-  border-right: 1px solid rgba(20, 167, 74, 0.12);
+  border-right: 1px solid rgba(148, 163, 184, 0.2);
   overflow: hidden;
   transition: width 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .sidebar.collapsed {
-  width: 80px;
-  padding-top: 4px;
+  width: 75px;
 }
 
 @media (max-width: 920px) {

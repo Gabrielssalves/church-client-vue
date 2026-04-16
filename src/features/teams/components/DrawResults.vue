@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import type { PropType } from 'vue'
 import type { Team, DrawStatus } from '../composables/useDraw'
 import TeamCard from './TeamCard.vue'
 
-const props = defineProps({
-  teams: { type: Array as PropType<Team[]>, required: true },
-  status: { type: String as PropType<DrawStatus>, required: true },
-  currentPresentingIndex: { type: Number, required: true },
-  animationDuration: { type: Number, required: true }
-})
+defineProps<{
+  teams: Team[]
+  status: DrawStatus
+  currentPresentingIndex: number
+  animationDuration: number
+}>()
 
 const emit = defineEmits<{
   (event: 'reset'): void
@@ -17,8 +16,13 @@ const emit = defineEmits<{
 
 <template>
   <section class="results-state">
-    <button v-if="status === 'done'" class="btn-back" @click="emit('reset')">
-      ← Reiniciar Sorteio
+    <button
+      v-if="status === 'done'"
+      type="button"
+      class="btn-back"
+      @click="emit('reset')"
+    >
+      &larr; Reiniciar Sorteio
     </button>
 
     <div class="teams-grid">
@@ -47,6 +51,8 @@ const emit = defineEmits<{
   font-weight: 700;
   cursor: pointer;
   margin-bottom: 24px;
+  font-family: inherit;
+  font-size: 1rem;
 }
 
 .btn-back:hover {

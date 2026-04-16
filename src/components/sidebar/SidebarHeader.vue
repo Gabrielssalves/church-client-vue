@@ -29,14 +29,14 @@ const emit = defineEmits<{
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 6px 8px;
+    padding: 10px 10px 8px;
     border: none;
-    border-bottom: 2px solid rgba(148, 163, 184, 0.16);
+    border-bottom: 1px solid rgba(148, 163, 184, 0.2);
 }
 
 .sidebar-brand-stage {
     position: relative;
-    width: 140px;
+    width: 154px;
     height: 38px;
     transition: width 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -78,8 +78,8 @@ const emit = defineEmits<{
 
 .sidebar-collapse {
     position: absolute;
-    right: 6px;
-    bottom: 4px;
+    right: 10px;
+    bottom: 8px;
     width: 22px;
     height: 22px;
     border: 1px solid rgba(20, 167, 74, 0.15);

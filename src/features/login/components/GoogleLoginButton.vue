@@ -1,37 +1,77 @@
-<script setup>
+<script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import { useAuth } from '@/composables/useAuth'
+import { useRouter } from 'vue-router'
+import { env } from '@/config/env'
 
-  import { onMounted } from "vue";
-  import { useAuth } from '@/composables/useAuth'
-  import { useRouter } from 'vue-router'
+// ---------------------------------------------------------------------------
+// Minimal type shim for the Google Identity Services SDK.
+// The full @types/google.accounts package can be added later if needed.
+// ---------------------------------------------------------------------------
 
-  const { loginWithGoogle } = useAuth()
-  const router = useRouter()
+interface GoogleCredentialResponse {
+  credential: string
+}
 
-  function init() {
-    globalThis.google.accounts.id.initialize({
-      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-      callback: handleCredentialResponse
-    });
-    globalThis.google.accounts.id.renderButton(
-      document.querySelector(".g_id_signin"),
-      { 
-        theme: "outline", 
-        size: "large",
-        width: 560,
-        locale: 'pt-BR'
+interface GoogleAccounts {
+  id: {
+    initialize: (config: {
+      client_id: string
+      callback: (response: GoogleCredentialResponse) => void
+    }) => void
+    renderButton: (
+      parent: Element,
+      options: {
+        theme?: string
+        size?: string
+        width?: number
+        locale?: string
       }
-    );
+    ) => void
+  }
+}
+
+declare global {
+  interface Window {
+    google?: { accounts: GoogleAccounts }
+  }
+}
+
+const { loginWithGoogle } = useAuth()
+const router = useRouter()
+const initError = ref<string | null>(null)
+
+function init(): void {
+  if (!window.google?.accounts) {
+    initError.value = 'Google Sign-In SDK not loaded.'
+    return
   }
 
-  async function handleCredentialResponse(response) {
-    try {
-      await loginWithGoogle(response.credential)
+  const buttonEl = document.querySelector<Element>('.g_id_signin')
+  if (!buttonEl) return
 
-      await router.replace({ name: 'Home' })
-    } catch (err) {
-      console.error('Login failed', err)
-    }
+  window.google.accounts.id.initialize({
+    client_id: env.googleClientId,
+    callback: handleCredentialResponse,
+  })
+
+  window.google.accounts.id.renderButton(buttonEl, {
+    theme: 'outline',
+    size: 'large',
+    width: 560,
+    locale: 'pt-BR',
+  })
+}
+
+async function handleCredentialResponse(response: GoogleCredentialResponse): Promise<void> {
+  try {
+    await loginWithGoogle(response.credential)
+    await router.replace({ name: 'Dashboard' })
+  } catch (err) {
+    // Error state is held by the store and exposed through useAuth in LoginForm
+    console.error('[GoogleLoginButton] login failed', err)
   }
+}
 
 onMounted(() => {
   init()
@@ -39,5 +79,16 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="g_id_signin"></div>
+  <div>
+    <p v-if="initError" role="alert" class="sdk-error">{{ initError }}</p>
+    <div class="g_id_signin" aria-label="Sign in with Google"></div>
+  </div>
 </template>
+
+<style scoped>
+.sdk-error {
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin: 0 0 0.5rem;
+}
+</style>

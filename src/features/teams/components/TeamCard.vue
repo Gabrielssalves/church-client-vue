@@ -1,18 +1,26 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Group, Team, DrawStatus } from '@/features/teams/composables/useDraw'
-import type { PropType } from 'vue'
+import type { Team, DrawStatus } from '@/features/teams/composables/useDraw'
 
-const props = defineProps({
-  team: { type: Object as PropType<Team>, required: true },
-  status: { type: String as PropType<DrawStatus>, required: true },
-  currentIndex: { type: Number, required: true },
-  currentPresentingIndex: { type: Number, required: true },
-  animationDuration: { type: Number, required: true }
-})
+const props = defineProps<{
+  team: Team
+  status: DrawStatus
+  currentIndex: number
+  currentPresentingIndex: number
+  animationDuration: number
+}>()
 
-const isActive = computed(() => props.currentPresentingIndex === props.currentIndex && props.status === 'presenting')
+const isActive = computed(
+  () =>
+    props.currentPresentingIndex === props.currentIndex &&
+    props.status === 'presenting'
+)
+
 const isDone = computed(() => props.status === 'done')
+
+const isPast = computed(
+  () => props.currentPresentingIndex > props.currentIndex
+)
 
 const cardStyle = computed(() =>
   isActive.value
@@ -20,27 +28,36 @@ const cardStyle = computed(() =>
         borderColor: props.team.color,
         boxShadow: `0 20px 50px -12px ${props.team.color}40`,
         transform: 'scale(1.05)',
-        zIndex: 20
+        zIndex: 20,
       }
     : {}
 )
 
 const headerStyle = computed(() => ({
-  backgroundColor: isActive.value || isDone.value ? `${props.team.color}08` : '#F9FAFB'
+  backgroundColor:
+    isActive.value || isDone.value ? `${props.team.color}08` : '#F9FAFB',
 }))
 
-const teamTextColor = computed(() => (isActive.value || isDone.value ? props.team.color : '#2D3748'))
+const teamTextColor = computed(() =>
+  isActive.value || isDone.value ? props.team.color : '#2D3748'
+)
 </script>
 
 <template>
   <article class="team-card" :style="cardStyle">
     <div class="team-header" :style="headerStyle">
-      <h3 class="team-name" :style="{ color: teamTextColor }">{{ team.groupName }}</h3>
+      <h3 class="team-name" :style="{ color: teamTextColor }">
+        {{ team.groupName }}
+      </h3>
     </div>
 
     <div class="team-body">
       <div v-if="isActive" class="credits-wrapper">
-        <div class="credits-animation" :style="{ '--duration': animationDuration + 'ms' }">
+        <div
+          class="credits-animation"
+          :style="{ '--duration': animationDuration + 'ms' }"
+          aria-live="polite"
+        >
           <div
             v-for="(member, memberIndex) in team.members"
             :key="`anim-${memberIndex}`"
@@ -52,7 +69,7 @@ const teamTextColor = computed(() => (isActive.value || isDone.value ? props.tea
         </div>
       </div>
 
-      <div v-else-if="isDone || currentPresentingIndex > currentIndex" class="final-list">
+      <div v-else-if="isDone || isPast" class="final-list">
         <div class="member-badges">
           <span
             v-for="(member, memberIndex) in team.members"
@@ -61,7 +78,7 @@ const teamTextColor = computed(() => (isActive.value || isDone.value ? props.tea
             :style="{
               backgroundColor: `${team.color}15`,
               borderColor: `${team.color}30`,
-              color: team.color
+              color: team.color,
             }"
           >
             {{ member }}
@@ -71,7 +88,9 @@ const teamTextColor = computed(() => (isActive.value || isDone.value ? props.tea
         <div v-if="team.members.length === 0" class="empty-state">Vazio</div>
       </div>
 
-      <div v-else class="pending-state">🔒</div>
+      <div v-else class="pending-state" aria-label="Aguardando revelação">
+        &#128274;
+      </div>
     </div>
   </article>
 </template>

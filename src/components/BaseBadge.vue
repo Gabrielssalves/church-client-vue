@@ -1,14 +1,20 @@
+<script setup lang="ts">
+import type { BadgeColor } from '@/types/ui'
+
+interface Props {
+  color?: BadgeColor
+}
+
+withDefaults(defineProps<Props>(), {
+  color: 'gray',
+})
+</script>
+
 <template>
   <span :class="['badge', `badge--${color}`]">
     <slot />
   </span>
 </template>
-
-<script setup lang="ts">
-defineProps({
-  color: { type: String, default: 'gray' }
-})
-</script>
 
 <style scoped>
 .badge {
@@ -16,9 +22,10 @@ defineProps({
   border-radius: 999px;
   font-size: 12px;
   font-weight: 500;
+  display: inline-flex;
+  align-items: center;
 }
 
-/* Colors */
 .badge--red {
   background: #fee2e2;
   color: #dc2626;

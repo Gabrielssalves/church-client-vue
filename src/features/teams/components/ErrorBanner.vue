@@ -1,7 +1,7 @@
 <script setup lang="ts">
-const props = defineProps({
-  message: { type: String, required: true }
-})
+defineProps<{
+  message: string
+}>()
 
 const emit = defineEmits<{
   (event: 'close'): void
@@ -9,9 +9,16 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="error-banner">
-    <p>{{ message }}</p>
-    <button type="button" class="close-button" @click="emit('close')">×</button>
+  <div class="error-banner" role="alert" aria-live="assertive">
+    <p class="error-banner__message">{{ message }}</p>
+    <button
+      type="button"
+      class="close-button"
+      aria-label="Fechar mensagem de erro"
+      @click="emit('close')"
+    >
+      <span aria-hidden="true">&times;</span>
+    </button>
   </div>
 </template>
 
@@ -26,7 +33,13 @@ const emit = defineEmits<{
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   color: #B91C1C;
+}
+
+.error-banner__message {
+  margin: 0;
+  flex: 1;
 }
 
 .close-button {
@@ -36,5 +49,11 @@ const emit = defineEmits<{
   font-size: 1.4rem;
   line-height: 1;
   cursor: pointer;
+  padding: 0 4px;
+  flex-shrink: 0;
+}
+
+.close-button:hover {
+  opacity: 0.7;
 }
 </style>

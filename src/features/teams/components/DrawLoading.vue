@@ -1,8 +1,11 @@
+<script setup lang="ts">
+// Stateless presentation component — no props required.
+</script>
+
 <template>
-  <main class="draw-loading">
-    <div class="spinner-container">
+  <main class="draw-loading" aria-live="polite" aria-label="Processando sorteio">
+    <div class="spinner-container" aria-hidden="true">
       <div class="spinner"></div>
-      <div class="spinner-icon">🎲</div>
     </div>
     <h2>Definindo destinos...</h2>
     <p>A sorte está sendo lançada.</p>
@@ -22,26 +25,18 @@
 
 .spinner-container {
   position: relative;
-  width: 130px;
-  height: 130px;
+  width: 80px;
+  height: 80px;
   margin-bottom: 28px;
 }
 
 .spinner {
   position: absolute;
   inset: 0;
-  border: 10px solid #F2F6F3;
+  border: 8px solid #F2F6F3;
   border-top-color: #14A74A;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-}
-
-.spinner-icon {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  font-size: 2.5rem;
 }
 
 h2 {
