@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import type { Group } from '../composables/useDraw'
+
+const { t } = useI18n()
 
 defineProps<{
   endpoint?: string
@@ -40,43 +43,43 @@ function updateGroupColor(index: number, event: Event): void {
 <template>
   <main class="draw-form-card">
     <div class="form-section">
-      <label class="label" for="draw-endpoint">Endpoint da API (Opcional)</label>
+      <label class="label" for="draw-endpoint">{{ t('draw.api_endpoint') }}</label>
       <input
         id="draw-endpoint"
         type="text"
         class="input-field"
         :value="endpoint"
         @input="updateEndpoint"
-        placeholder="https://sua-api.com/sorteio"
+        :placeholder="t('draw.api_placeholder')"
         autocomplete="off"
       />
     </div>
 
     <div class="form-section">
-      <label class="label" for="draw-participants">Participantes</label>
+      <label class="label" for="draw-participants">{{ t('draw.participants') }}</label>
       <textarea
         id="draw-participants"
         class="textarea-field"
         rows="4"
         :value="namesInput"
         @input="updateNamesInput"
-        placeholder="Separe os nomes por vírgula ou nova linha..."
+        :placeholder="t('draw.participants_placeholder')"
       />
     </div>
 
     <div class="form-section">
-      <p class="label" id="groups-label">Configuração de Grupos</p>
+      <p class="label" id="groups-label">{{ t('draw.group_config') }}</p>
 
       <div
         v-for="(group, index) in groupsList"
         :key="index"
         class="group-row"
         role="group"
-        :aria-label="`Grupo ${index + 1}`"
+        :aria-label="t('draw.group_label', { n: index + 1 })"
       >
         <div class="color-picker-wrapper" :style="{ borderColor: group.color }">
           <label :for="`group-color-${index}`" class="visually-hidden">
-            Cor do grupo {{ index + 1 }}
+            {{ t('draw.group_color', { n: index + 1 }) }}
           </label>
           <input
             :id="`group-color-${index}`"
@@ -88,7 +91,7 @@ function updateGroupColor(index: number, event: Event): void {
         </div>
 
         <label :for="`group-name-${index}`" class="visually-hidden">
-          Nome do grupo {{ index + 1 }}
+          {{ t('draw.group_name', { n: index + 1 }) }}
         </label>
         <input
           :id="`group-name-${index}`"
@@ -96,28 +99,28 @@ function updateGroupColor(index: number, event: Event): void {
           class="input-field flex-1"
           :value="group.name"
           @input="(event) => updateGroupName(index, event)"
-          placeholder="Nome do Grupo"
+          :placeholder="t('draw.group_placeholder')"
         />
 
         <button
           v-if="groupsList.length > 1"
           type="button"
           class="btn-remove"
-          :aria-label="`Remover grupo ${index + 1}`"
+          :aria-label="t('draw.remove_group', { n: index + 1 })"
           @click="emit('remove-group', index)"
         >
-          Excluir
+          {{ t('draw.delete') }}
         </button>
       </div>
 
       <button type="button" class="btn-add-group" @click="emit('add-group')">
-        + Adicionar novo grupo
+        {{ t('draw.add_group') }}
       </button>
     </div>
 
     <div class="actions">
       <button type="button" class="btn-primary" @click="handleSubmit">
-        SORTEAR TIMES
+        {{ t('draw.draw_button') }}
       </button>
     </div>
   </main>

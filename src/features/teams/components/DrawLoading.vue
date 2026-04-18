@@ -1,14 +1,16 @@
 <script setup lang="ts">
-// Stateless presentation component — no props required.
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 </script>
 
 <template>
-  <main class="draw-loading" aria-live="polite" aria-label="Processando sorteio">
+  <main class="draw-loading" aria-live="polite" :aria-label="t('draw.processing')">
     <div class="spinner-container" aria-hidden="true">
       <div class="spinner"></div>
     </div>
-    <h2>Definindo destinos...</h2>
-    <p>A sorte está sendo lançada.</p>
+    <h2>{{ t('draw.loading_title') }}</h2>
+    <p>{{ t('draw.loading_subtitle') }}</p>
   </main>
 </template>
 

@@ -3,11 +3,11 @@ import { computed } from 'vue'
 
 interface Props {
   name: string
-  /** Optional explicit alt text; defaults to the full name. */
+  size?: number
   alt?: string
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), { size: 40 })
 
 const initials = computed(() =>
   props.name
@@ -21,22 +21,24 @@ const initials = computed(() =>
 </script>
 
 <template>
-  <div class="avatar" :aria-label="alt ?? name" role="img">
+  <div
+    class="avatar"
+    :style="{ width: `${size}px`, height: `${size}px`, fontSize: `${Math.round(size * 0.35)}px` }"
+    :aria-label="alt ?? name"
+    role="img"
+  >
     {{ initials }}
   </div>
 </template>
 
 <style scoped>
 .avatar {
-  width: 40px;
-  height: 40px;
   border-radius: 50%;
   background: var(--color-bg-contrast, #e5e7eb);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: 0.875rem;
   color: var(--color-text, #374151);
   flex-shrink: 0;
   user-select: none;

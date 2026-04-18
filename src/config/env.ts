@@ -34,6 +34,12 @@ export const env = {
   authBaseUrl: requireEnv('VITE_AUTH_BASE_URL'),
 
   /**
+   * Base URL for the main application API.
+   * Example: http://localhost:3000
+   */
+  apiBaseUrl: requireEnv('VITE_API_BASE_URL'),
+
+  /**
    * Google OAuth 2.0 client ID for the Google Identity Services button.
    */
   googleClientId: requireEnv('VITE_GOOGLE_CLIENT_ID'),

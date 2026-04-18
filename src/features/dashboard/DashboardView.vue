@@ -1,102 +1,144 @@
 <template>
     <section class="dashboard-view">
         <header class="dashboard-header">
-            <h1>Overview</h1>
-            <p>Manage your team and upcoming services.</p>
+            <h1>{{ t('dashboard.title') }}</h1>
+            <p>{{ t('dashboard.subtitle') }}</p>
         </header>
 
-        <div class="metrics-grid">
-            <Card title="Total Musicians" icon="musicians">
-                <p class="metric-value">{{ totalMusicians }}</p>
-                <p class="metric-caption">{{ totalMusicians }} active currently</p>
-            </Card>
-
-            <Card title="Total Skills" icon="music">
-                <p class="metric-value">{{ totalSkills }}</p>
-                <p class="metric-caption">Core skill categories</p>
-            </Card>
-
-            <Card title="Upcoming Events" icon="home">
-                <p class="metric-value">{{ upcomingServices.length }}</p>
-                <p class="metric-caption">{{ upcomingServices.length }} scheduled this month</p>
-            </Card>
+        <div v-if="isLoading" class="loading-state">
+            <span class="spinner" />
+            <p>{{ t('dashboard.loading') }}</p>
         </div>
 
-        <div class="content-grid">
-            <Card title="Upcoming Services" subtitle="The next 5 scheduled events.">
-                <ul class="service-list">
-                    <li v-for="service in upcomingServices" :key="service.id" class="service-row">
-                        <div>
-                            <p class="service-title">{{ service.name }}</p>
-                            <p class="service-date">{{ service.date }}</p>
-                        </div>
+        <template v-else>
+            <div class="metrics-grid">
+                <Card :title="t('dashboard.total_musicians')" icon="musicians">
+                    <p class="metric-value">{{ totalMusicians }}</p>
+                    <p class="metric-caption">{{ totalMusicians }} {{ t('dashboard.active_currently') }}</p>
+                </Card>
 
-                        <div class="service-meta">
-                            <span class="assigned-badge">{{ service.assigned }} assigned</span>
-                            <span class="service-chevron" aria-hidden="true">&#8250;</span>
-                        </div>
-                    </li>
-                </ul>
-            </Card>
+                <Card :title="t('dashboard.total_skills')" icon="music">
+                    <p class="metric-value">{{ totalSkills }}</p>
+                    <p class="metric-caption">{{ t('dashboard.skill_categories') }}</p>
+                </Card>
 
-            <Card title="Musician Load" subtitle="Service count for the current month.">
-                <div class="load-list">
-                    <article v-for="musician in musicianLoad" :key="musician.name" class="load-row">
-                        <div class="load-row__top">
-                            <p class="load-name">{{ musician.name }}</p>
-                            <p class="load-value">{{ musician.count }} / {{ musician.max }} max</p>
-                        </div>
+                <Card :title="t('dashboard.upcoming_events')" icon="home">
+                    <p class="metric-value">{{ upcomingServices.length }}</p>
+                    <p class="metric-caption">{{ upcomingServices.length }} {{ t('dashboard.scheduled_month') }}</p>
+                </Card>
+            </div>
 
-                        <div class="progress-track" role="progressbar" :aria-valuemin="0" :aria-valuemax="musician.max"
-                            :aria-valuenow="musician.count">
-                            <span class="progress-fill"
-                                :style="{ width: `${(musician.count / musician.max) * 100}%` }" />
-                        </div>
+            <div class="content-grid">
+                <Card :title="t('dashboard.upcoming_services')" :subtitle="t('dashboard.next_5')">
+                    <ul class="service-list">
+                        <li v-if="upcomingServices.length === 0" class="service-empty">
+                            {{ t('dashboard.no_services') }}
+                        </li>
+                        <li v-for="service in upcomingServices" :key="service.id" class="service-row">
+                            <div>
+                                <p class="service-title">{{ service.name }}</p>
+                                <p class="service-date">{{ formatDate(service.date) }}</p>
+                            </div>
+                            <div class="service-meta">
+                                <span class="assigned-badge">{{ service.users.length }} {{ t('dashboard.assigned') }}</span>
+                                <span class="service-chevron" aria-hidden="true">&#8250;</span>
+                            </div>
+                        </li>
+                    </ul>
+                </Card>
 
-                        <p class="load-note">{{ musician.count > 0 ? 'Scheduled this month' : 'Not scheduled yet' }}</p>
-                    </article>
-                </div>
-            </Card>
-        </div>
+                <Card :title="t('dashboard.musician_load')" :subtitle="t('dashboard.month_count')">
+                    <div class="load-list">
+                        <p v-if="musicianLoad.length === 0" class="load-empty">{{ t('dashboard.no_musicians') }}</p>
+                        <article v-for="musician in musicianLoad" :key="musician.name" class="load-row">
+                            <div class="load-row__top">
+                                <p class="load-name">{{ musician.name }}</p>
+                                <p class="load-value">{{ musician.count }} / {{ musician.max }} {{ t('dashboard.max') }}</p>
+                            </div>
+                            <div class="progress-track" role="progressbar" :aria-valuemin="0"
+                                :aria-valuemax="musician.max" :aria-valuenow="musician.count">
+                                <span class="progress-fill"
+                                    :style="{ width: `${musician.max > 0 ? (musician.count / musician.max) * 100 : 0}%` }" />
+                            </div>
+                            <p class="load-note">
+                                {{ musician.count > 0 ? t('dashboard.scheduled_note') : t('dashboard.not_scheduled') }}
+                            </p>
+                        </article>
+                    </div>
+                </Card>
+            </div>
+        </template>
     </section>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import Card from './components/Card.vue'
+import { usersService } from '@/services/usersService'
+import { skillsService } from '@/services/skillsService'
+import { schedulesService } from '@/services/schedulesService'
+import type { User } from '@/features/users/types/User'
+import type { Skill } from '@/features/skills/types/Skill'
+import type { Schedule } from '@/features/schedules/types/Schedule'
 
-type ServiceItem = {
-    id: string
-    name: string
-    date: string
-    assigned: number
+const { t, locale } = useI18n()
+
+const isLoading = ref(true)
+const users = ref<User[]>([])
+const skills = ref<Skill[]>([])
+const schedules = ref<Schedule[]>([])
+
+const MAX_PER_MONTH = 4
+
+const now = new Date()
+
+const totalMusicians = computed(() => users.value.filter(u => u.active).length)
+const totalSkills = computed(() => skills.value.length)
+
+const upcomingServices = computed(() =>
+    schedules.value
+        .filter(s => new Date(s.date) >= now)
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        .slice(0, 5)
+)
+
+const musicianLoad = computed(() => {
+    const currentMonth = now.getMonth()
+    const currentYear = now.getFullYear()
+    return users.value.map(user => {
+        const count = schedules.value.filter(s => {
+            const d = new Date(s.date)
+            return d.getMonth() === currentMonth
+                && d.getFullYear() === currentYear
+                && s.users.some(su => su.userId === user.id)
+        }).length
+        return { name: user.name, count, max: MAX_PER_MONTH }
+    })
+})
+
+function formatDate(dateStr: string): string {
+    return new Date(dateStr).toLocaleDateString(locale.value === 'en' ? 'en-US' : 'pt-BR', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+    })
 }
 
-type MusicianLoad = {
-    name: string
-    count: number
-    max: number
-}
-
-const upcomingServices = ref<ServiceItem[]>([
-    {
-        id: '1',
-        name: 'Easter Sunday',
-        date: 'Sunday, April 5, 2026',
-        assigned: 0
+onMounted(async () => {
+    try {
+        const [usersData, skillsData, schedulesData] = await Promise.all([
+            usersService.getAll(),
+            skillsService.getAll(),
+            schedulesService.getAll(),
+        ])
+        users.value = usersData
+        skills.value = skillsData
+        schedules.value = schedulesData
+    } catch {
+        // silent — keep defaults
+    } finally {
+        isLoading.value = false
     }
-])
-
-const musicianLoad = ref<MusicianLoad[]>([
-    { name: 'Gabriel Alves', count: 0, max: 4 },
-    { name: 'Ariel Vaccari', count: 0, max: 4 },
-    { name: 'Cesar Eduardo', count: 0, max: 4 },
-    { name: 'Igor Gondin', count: 0, max: 4 },
-    { name: 'Mariana', count: 0, max: 4 }
-])
-
-const totalMusicians = computed(() => musicianLoad.value.length)
-const totalSkills = ref(7)
+})
 </script>
 
 <style scoped>
@@ -106,9 +148,7 @@ const totalSkills = ref(7)
     padding: 24px 8px 32px;
 }
 
-.dashboard-header {
-    margin-bottom: 22px;
-}
+.dashboard-header { margin-bottom: 22px; }
 
 .dashboard-header h1 {
     margin: 0 0 6px;
@@ -121,6 +161,28 @@ const totalSkills = ref(7)
     margin: 0;
     color: var(--color-text-light);
 }
+
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 80px 0;
+    color: var(--color-text-light);
+}
+
+.spinner {
+    display: block;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 3px solid var(--color-bg-contrast);
+    border-top-color: var(--color-primary);
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
 
 .metrics-grid {
     display: grid;
@@ -155,6 +217,16 @@ const totalSkills = ref(7)
     padding: 0;
     list-style: none;
     min-height: 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.service-empty, .load-empty {
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 32px 0;
 }
 
 .service-row {
@@ -178,6 +250,7 @@ const totalSkills = ref(7)
 .service-date {
     margin: 5px 0 0;
     color: var(--color-text-light);
+    text-transform: capitalize;
 }
 
 .service-meta {
@@ -207,13 +280,8 @@ const totalSkills = ref(7)
     padding-right: 4px;
 }
 
-.load-row {
-    padding: 8px 0 14px;
-}
-
-.load-row+.load-row {
-    border-top: 1px solid #f0f2f7;
-}
+.load-row { padding: 8px 0 14px; }
+.load-row + .load-row { border-top: 1px solid #f0f2f7; }
 
 .load-row__top {
     display: flex;
@@ -222,21 +290,9 @@ const totalSkills = ref(7)
     gap: 12px;
 }
 
-.load-name,
-.load-value,
-.load-note {
-    margin: 0;
-}
-
-.load-name {
-    color: #111827;
-    font-weight: 600;
-}
-
-.load-value {
-    font-weight: 600;
-    color: #4b5563;
-}
+.load-name, .load-value, .load-note { margin: 0; }
+.load-name { color: #111827; font-weight: 600; }
+.load-value { font-weight: 600; color: #4b5563; }
 
 .progress-track {
     margin-top: 8px;
@@ -261,21 +317,9 @@ const totalSkills = ref(7)
 }
 
 @media (max-width: 980px) {
-    .metrics-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .content-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .service-list {
-        min-height: 0;
-    }
-
-    .load-list {
-        max-height: none;
-        overflow: visible;
-    }
+    .metrics-grid { grid-template-columns: 1fr; }
+    .content-grid { grid-template-columns: 1fr; }
+    .service-list { min-height: 0; }
+    .load-list { max-height: none; overflow: visible; }
 }
 </style>

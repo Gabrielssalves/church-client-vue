@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import LoginForm from '../components/LoginForm.vue'
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -7,8 +10,8 @@ import LoginForm from '../components/LoginForm.vue'
     <div class="left-panel">
       <div class="blob-shape"></div>
       <div class="welcome-content">
-        <h1 class="welcome-title">Welcome Back</h1>
-        <p class="welcome-subtitle">We're excited to see you again. Sign in to access your account and continue your journey with us.</p>
+        <h1 class="welcome-title">{{ t('login.welcome') }}</h1>
+        <p class="welcome-subtitle">{{ t('login.welcome_subtitle') }}</p>
       </div>
     </div>
     <div class="right-panel">

@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useAuth } from '@/composables/useAuth'
 import { useRouter } from 'vue-router'
 import Logo from './Logo.vue'
 import GoogleLoginButton from './GoogleLoginButton.vue'
 import type { LoginCredentials } from '@/types/auth'
 
+const { t } = useI18n()
 const email = ref('')
 const password = ref('')
 const rememberMe = ref(false)
@@ -31,31 +33,31 @@ async function handleLogin(): Promise<void> {
 <template>
   <div class="login-form-container">
     <Logo />
-    <h2 class="form-title">Login</h2>
-    <p class="form-subtitle">Enter your credentials to access your account</p>
+    <h2 class="form-title">{{ t('login.title') }}</h2>
+    <p class="form-subtitle">{{ t('login.subtitle') }}</p>
 
     <form @submit.prevent="handleLogin" novalidate>
       <div class="form-group">
-        <label class="form-label" for="login-email">Email Address</label>
+        <label class="form-label" for="login-email">{{ t('login.email') }}</label>
         <input
           class="form-input"
           type="email"
           id="login-email"
           v-model="email"
-          placeholder="you@example.com"
+          :placeholder="t('login.email_placeholder')"
           autocomplete="email"
           required
         />
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="login-password">Password</label>
+        <label class="form-label" for="login-password">{{ t('login.password') }}</label>
         <input
           class="form-input"
           type="password"
           id="login-password"
           v-model="password"
-          placeholder="••••••••"
+          :placeholder="t('login.password_placeholder')"
           autocomplete="current-password"
           required
         />
@@ -64,13 +66,13 @@ async function handleLogin(): Promise<void> {
       <div class="form-options">
         <div class="checkbox-group">
           <input type="checkbox" id="remember-me" v-model="rememberMe" />
-          <label class="checkbox-label" for="remember-me">Remember me</label>
+          <label class="checkbox-label" for="remember-me">{{ t('login.remember') }}</label>
         </div>
-        <a href="#" class="forgot-password">Forgot password?</a>
+        <a href="#" class="forgot-password">{{ t('login.forgot') }}</a>
       </div>
 
       <button type="submit" class="btn-primary" :disabled="isLoading">
-        <span v-if="!isLoading">Login</span>
+        <span v-if="!isLoading">{{ t('login.submit') }}</span>
         <span v-else class="button-spinner" aria-hidden="true"></span>
       </button>
     </form>
@@ -78,7 +80,7 @@ async function handleLogin(): Promise<void> {
     <p v-if="error" role="alert" class="form-error">{{ error.message }}</p>
 
     <div class="divider" aria-hidden="true">
-      <span class="divider-text">or continue with</span>
+      <span class="divider-text">{{ t('login.or_with') }}</span>
     </div>
 
     <GoogleLoginButton class="btn-google" />

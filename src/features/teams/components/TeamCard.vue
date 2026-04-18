@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
 import type { Team, DrawStatus } from '@/features/teams/composables/useDraw'
+
+const { t } = useI18n()
 
 const props = defineProps<{
   team: Team
@@ -85,10 +88,10 @@ const teamTextColor = computed(() =>
           </span>
         </div>
 
-        <div v-if="team.members.length === 0" class="empty-state">Vazio</div>
+        <div v-if="team.members.length === 0" class="empty-state">{{ t('draw.empty_team') }}</div>
       </div>
 
-      <div v-else class="pending-state" aria-label="Aguardando revelação">
+      <div v-else class="pending-state" :aria-label="t('draw.processing')">
         &#128274;
       </div>
     </div>

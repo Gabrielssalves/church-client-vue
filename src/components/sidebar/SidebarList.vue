@@ -8,18 +8,18 @@
                     <span class="sidebar-icon">
                         <AppIcon :name="getIcon(route)" :size="18" />
                     </span>
-                    <span v-if="!props.collapsed" class="sidebar-label">{{ route.meta?.label }}</span>
+                    <span v-if="!props.collapsed" class="sidebar-label">{{ t(String(route.meta?.label ?? '')) }}</span>
                 </RouterLink>
             </template>
 
             <template v-else>
                 <button type="button" class="sidebar-toggle" @click="toggle(route.path)"
-                    :title="props.collapsed ? String(route.meta?.label ?? '') : undefined"
-                    :aria-label="props.collapsed ? String(route.meta?.label ?? '') : undefined">
+                    :title="props.collapsed ? t(String(route.meta?.label ?? '')) : undefined"
+                    :aria-label="props.collapsed ? t(String(route.meta?.label ?? '')) : undefined">
                     <span class="sidebar-icon">
                         <AppIcon :name="getIcon(route)" :size="18" />
                     </span>
-                    <span v-if="!props.collapsed" class="sidebar-label">{{ route.meta?.label }}</span>
+                    <span v-if="!props.collapsed" class="sidebar-label">{{ t(String(route.meta?.label ?? '')) }}</span>
                     <span v-if="!props.collapsed" class="chevron" :class="{ open: openMenus.includes(route.path) }">
                         <AppIcon name="chevron-down" :size="16" />
                     </span>
@@ -33,7 +33,7 @@
                                 <span class="sidebar-icon">
                                     <AppIcon :name="getIcon(child)" :size="16" />
                                 </span>
-                                <span v-if="!props.collapsed" class="sidebar-label">{{ child.meta?.label }}</span>
+                                <span v-if="!props.collapsed" class="sidebar-label">{{ t(String(child.meta?.label ?? '')) }}</span>
                             </RouterLink>
                         </li>
                     </ul>
@@ -42,13 +42,16 @@
         </li>
     </ul>
     <p v-if="visibleRoutes.length === 0 && !props.collapsed" class="sidebar-empty">
-        Nenhuma rota disponível
+        {{ t('sidebar.no_routes') }}
     </p>
 </template>
 
 <script setup lang="ts">
 import type { RouteRecordRaw } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 import AppIcon from '@/components/ui/AppIcon.vue'
+
+const { t } = useI18n()
 
 const props = defineProps<{
     visibleRoutes: RouteRecordRaw[]

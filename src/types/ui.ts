@@ -7,4 +7,6 @@
  */
 
 /** Available badge colour tokens — must match BaseBadge's CSS modifier classes. */
-export type BadgeColor = 'red' | 'blue' | 'green' | 'purple' | 'orange' | 'gray'
+export type BadgeColor =
+  | 'green' | 'teal' | 'blue' | 'indigo' | 'purple'
+  | 'pink' | 'red' | 'orange' | 'yellow' | 'lime' | 'cyan' | 'gray'

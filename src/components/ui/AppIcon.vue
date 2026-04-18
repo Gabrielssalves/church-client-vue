@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import {
+    Calendar,
     ChevronDown,
     ChevronLeft,
     ChevronRight,
@@ -10,6 +11,7 @@ import {
     Music,
     Shield,
     Shuffle,
+    Star,
     Users
 } from 'lucide-vue-next'
 
@@ -41,6 +43,10 @@ const iconMap = {
     chevrondown: ChevronDown,
     'chevron-down': ChevronDown,
     circle: Circle,
+    calendar: Calendar,
+    star: Star,
+    skills: Star,
+    schedules: Calendar,
     default: Shield
 } as const
 

@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import type { Team, DrawStatus } from '../composables/useDraw'
 import TeamCard from './TeamCard.vue'
+
+const { t } = useI18n()
 
 defineProps<{
   teams: Team[]
@@ -22,7 +25,7 @@ const emit = defineEmits<{
       class="btn-back"
       @click="emit('reset')"
     >
-      &larr; Reiniciar Sorteio
+      {{ t('draw.reset') }}
     </button>
 
     <div class="teams-grid">

@@ -78,3 +78,9 @@ export function createHttpClient(baseURL: string): AxiosInstance {
 // ---------------------------------------------------------------------------
 
 export const authHttpClient = createHttpClient(env.authBaseUrl)
+
+// ---------------------------------------------------------------------------
+// Main API HTTP client — used by feature services
+// ---------------------------------------------------------------------------
+
+export const apiHttpClient = createHttpClient(env.apiBaseUrl)

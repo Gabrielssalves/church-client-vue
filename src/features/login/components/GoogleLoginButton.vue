@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useAuth } from '@/composables/useAuth'
 import { useRouter } from 'vue-router'
 import { env } from '@/config/env'
@@ -37,13 +38,14 @@ declare global {
   }
 }
 
+const { t } = useI18n()
 const { loginWithGoogle } = useAuth()
 const router = useRouter()
 const initError = ref<string | null>(null)
 
 function init(): void {
   if (!window.google?.accounts) {
-    initError.value = 'Google Sign-In SDK not loaded.'
+    initError.value = t('login.google_sdk_error')
     return
   }
 
@@ -81,7 +83,7 @@ onMounted(() => {
 <template>
   <div>
     <p v-if="initError" role="alert" class="sdk-error">{{ initError }}</p>
-    <div class="g_id_signin" aria-label="Sign in with Google"></div>
+    <div class="g_id_signin" :aria-label="t('login.google')"></div>
   </div>
 </template>
 

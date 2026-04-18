@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import DrawForm from '../components/DrawForm.vue'
 import DrawLoading from '../components/DrawLoading.vue'
 import DrawResults from '../components/DrawResults.vue'
 import ErrorBanner from '../components/ErrorBanner.vue'
 import { useDraw } from '../composables/useDraw'
+
+const { t } = useI18n()
 
 const {
   status,
@@ -26,7 +29,7 @@ const {
 <template>
   <div class="teams-page">
     <header class="teams-header">
-      <h1 class="teams-title">Sorteio de Times</h1>
+      <h1 class="teams-title">{{ t('draw.title') }}</h1>
     </header>
 
     <ErrorBanner
