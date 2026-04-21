@@ -46,7 +46,8 @@ const { t } = useI18n()
   border-radius: 0;
 }
 
-.left-panel::before, .left-panel::after {
+.left-panel::before,
+.left-panel::after {
   content: '';
   position: absolute;
   border-radius: 50%;
@@ -77,13 +78,14 @@ const { t } = useI18n()
 }
 
 @keyframes blob-animation {
-  0% { 
-    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; 
-    transform: translate(0, 0) rotate(0deg); 
+  0% {
+    border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+    transform: translate(0, 0) rotate(0deg);
   }
-  100% { 
-    border-radius: 30% 70% 70% 30% / 50% 50% 50% 50%; 
-    transform: translate(20px, -20px) rotate(10deg); 
+
+  100% {
+    border-radius: 30% 70% 70% 30% / 50% 50% 50% 50%;
+    transform: translate(20px, -20px) rotate(10deg);
   }
 }
 
@@ -107,7 +109,7 @@ const { t } = useI18n()
 }
 
 .right-panel {
-  background: white;
+  background: var(--color-white);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -125,29 +127,35 @@ const { t } = useI18n()
   .login-container {
     grid-template-columns: 1fr;
   }
+
   .left-panel {
     min-height: 300px;
     padding: 2rem;
   }
+
   .left-panel::before {
     width: 250px;
     height: 250px;
     top: -80px;
     right: -80px;
   }
+
   .left-panel::after {
     width: 180px;
     height: 180px;
     bottom: -60px;
     left: -60px;
   }
+
   .blob-shape {
     width: 200px;
     height: 200px;
   }
+
   .welcome-title {
     font-size: 2rem;
   }
+
   .right-panel {
     padding: 2rem;
   }

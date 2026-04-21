@@ -101,7 +101,7 @@ async function handleLogin(): Promise<void> {
 }
 
 .form-subtitle {
-  color: #4A5568;
+  color: var(--color-text-light);
   margin-bottom: 2rem;
   margin-top: 0;
 }
@@ -127,7 +127,8 @@ form {
   border: 1px solid var(--color-primary);
   border-radius: 8px;
   font-size: 1rem;
-  background: white;
+  background: var(--color-white);
+  color: var(--color-text);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   font-family: inherit;
 }
@@ -152,7 +153,7 @@ form {
 }
 
 .checkbox-label {
-  color: #4A5568;
+  color: var(--color-text-light);
   font-size: 0.875rem;
   cursor: pointer;
   user-select: none;
@@ -223,12 +224,12 @@ form {
 .divider::after {
   content: '';
   flex: 1;
-  border-bottom: 1px solid #E2E8F0;
+  border-bottom: 1px solid var(--border-color);
 }
 
 .divider-text {
   padding: 0 1rem;
-  color: #718096;
+  color: var(--color-text-light);
   font-size: 0.875rem;
   white-space: nowrap;
 }
