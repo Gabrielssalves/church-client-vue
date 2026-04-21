@@ -78,8 +78,8 @@ const isDisabled = computed(() => props.disabled || props.loading)
 }
 
 .btn--secondary {
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--btn-secondary-bg);
+  color: var(--btn-secondary-color);
 }
 
 .btn--ghost {
@@ -88,12 +88,12 @@ const isDisabled = computed(() => props.disabled || props.loading)
 }
 
 .btn--danger {
-  background: #fee2e2;
-  color: #dc2626;
+  background: var(--btn-danger-bg);
+  color: var(--btn-danger-color);
 }
 
 .btn--danger:hover:not(:disabled) {
-  background: #fecaca;
+  background: var(--btn-danger-hover-bg);
   opacity: 1;
 }
 

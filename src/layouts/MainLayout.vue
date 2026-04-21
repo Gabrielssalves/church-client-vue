@@ -5,6 +5,8 @@
     <main class="layout-main" :class="{ 'no-padding': !showSidebar }">
       <router-view />
     </main>
+
+    <ThemeToggle />
   </div>
 </template>
 
@@ -12,6 +14,7 @@
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import Sidebar from '@/components/sidebar/Sidebar.vue'
+import ThemeToggle from '@/components/ui/ThemeToggle.vue'
 
 const isCollapsed = ref(false)
 const route = useRoute()

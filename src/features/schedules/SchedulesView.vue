@@ -604,8 +604,8 @@ h1 {
     width: 40px;
     height: 40px;
     border-radius: 10px;
-    background: #dcfce7;
-    color: var(--color-primary);
+    background: var(--icon-bg);
+    color: var(--icon-color);
     display: grid;
     place-items: center;
     flex-shrink: 0;

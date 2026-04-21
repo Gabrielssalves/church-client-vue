@@ -8,10 +8,12 @@ import {
     Circle,
     Home,
     LogOut,
+    Moon,
     Music,
     Shield,
     Shuffle,
     Star,
+    Sun,
     Users
 } from 'lucide-vue-next'
 
@@ -47,6 +49,8 @@ const iconMap = {
     star: Star,
     skills: Star,
     schedules: Calendar,
+    sun: Sun,
+    moon: Moon,
     default: Shield
 } as const
 

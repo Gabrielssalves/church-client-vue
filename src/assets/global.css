@@ -21,7 +21,90 @@
   --border-color: #E2E8F0;
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+
+  /* Buttons */
+  --btn-secondary-bg: #f3f4f6;
+  --btn-secondary-color: #374151;
+  --btn-danger-bg: #fee2e2;
+  --btn-danger-color: #dc2626;
+  --btn-danger-hover-bg: #fecaca;
+
+  /* Badge (assigned pill) */
+  --badge-text: #4c5d90;
+  --badge-bg: #eef1fb;
+
+  /* Badge colors */
+  --badge-green-bg: #dcfce7;   --badge-green-color: #16a34a;
+  --badge-teal-bg: #ccfbf1;    --badge-teal-color: #0f766e;
+  --badge-blue-bg: #dbeafe;    --badge-blue-color: #2563eb;
+  --badge-indigo-bg: #e0e7ff;  --badge-indigo-color: #4338ca;
+  --badge-purple-bg: #f3e8ff;  --badge-purple-color: #9333ea;
+  --badge-pink-bg: #fce7f3;    --badge-pink-color: #db2777;
+  --badge-red-bg: #fee2e2;     --badge-red-color: #dc2626;
+  --badge-orange-bg: #ffedd5;  --badge-orange-color: #ea580c;
+  --badge-yellow-bg: #fef9c3;  --badge-yellow-color: #ca8a04;
+  --badge-lime-bg: #ecfccb;    --badge-lime-color: #65a30d;
+  --badge-cyan-bg: #cffafe;    --badge-cyan-color: #0891b2;
+  --badge-gray-bg: #f3f4f6;    --badge-gray-color: #4b5563;
+
+  /* Status badge */
+  --status-active-bg: #dcfce7;  --status-active-color: #16a34a;
+  --status-inactive-bg: #f3f4f6; --status-inactive-color: #6b7280;
+
+  /* Card icon */
+  --icon-color: var(--color-primary-dark);
+  --icon-bg: rgba(20, 167, 74, 0.1);
+
+  /* Skill check selected */
+  --skill-check-selected-bg: #f0fdf4;
 }
+
+[data-theme="dark"] {
+  --color-bg: #0F1117;
+  --color-bg-contrast: #2A3142;
+  --color-white: #1A1F2E;
+  --color-text: #E2E8F0;
+  --color-text-light: #94A3B8;
+  --border-color: #2D3748;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  /* Buttons */
+  --btn-secondary-bg: #2d3748;
+  --btn-secondary-color: #e2e8f0;
+  --btn-danger-bg: #3b1a1a;
+  --btn-danger-color: #f87171;
+  --btn-danger-hover-bg: #4c2020;
+
+  /* Badge (assigned pill) */
+  --badge-text: #93aef0;
+  --badge-bg: #1e2a45;
+
+  /* Badge colors */
+  --badge-green-bg: #14532d;   --badge-green-color: #86efac;
+  --badge-teal-bg: #134e4a;    --badge-teal-color: #5eead4;
+  --badge-blue-bg: #1e3a5f;    --badge-blue-color: #93c5fd;
+  --badge-indigo-bg: #2e1065;  --badge-indigo-color: #a5b4fc;
+  --badge-purple-bg: #3b0764;  --badge-purple-color: #d8b4fe;
+  --badge-pink-bg: #500724;    --badge-pink-color: #f9a8d4;
+  --badge-red-bg: #450a0a;     --badge-red-color: #fca5a5;
+  --badge-orange-bg: #431407;  --badge-orange-color: #fdba74;
+  --badge-yellow-bg: #422006;  --badge-yellow-color: #fde047;
+  --badge-lime-bg: #1a2e05;    --badge-lime-color: #bef264;
+  --badge-cyan-bg: #083344;    --badge-cyan-color: #67e8f9;
+  --badge-gray-bg: #1f2937;    --badge-gray-color: #9ca3af;
+
+  /* Status badge */
+  --status-active-bg: #14532d;   --status-active-color: #86efac;
+  --status-inactive-bg: #1f2937; --status-inactive-color: #9ca3af;
+
+  /* Card icon */
+  --icon-color: var(--color-primary-light);
+  --icon-bg: rgba(110, 211, 154, 0.15);
+
+  /* Skill check selected */
+  --skill-check-selected-bg: #1a2e22;
+}
+
 
 * {
   margin: 0;
@@ -38,6 +121,23 @@ body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   color: var(--color-text);
   background-color: var(--color-bg);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="password"],
+input[type="date"],
+input[type="number"],
+select,
+textarea {
+  background: var(--color-white);
+  color: var(--color-text);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text-light);
 }
 
 #app {

@@ -50,6 +50,7 @@ withDefaults(
 
 .dashboard-card.is-clickable {
     transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
 }
 
 .dashboard-card.is-clickable:hover {
@@ -93,8 +94,8 @@ withDefaults(
     width: 24px;
     height: 24px;
     border-radius: 8px;
-    background: rgba(20, 167, 74, 0.1);
-    color: var(--color-primary-dark);
+    background: var(--icon-bg);
+    color: var(--icon-color);
     display: grid;
     place-items: center;
     flex-shrink: 0;

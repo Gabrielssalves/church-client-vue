@@ -261,8 +261,8 @@ h1 { margin: 0 0 8px; font-size: 2rem; }
 .user-card__info small { display: block; color: #6b7280; font-size: 0.85rem; }
 
 .status-badge { font-size: 0.7rem; font-weight: 600; padding: 2px 7px; border-radius: 999px; }
-.status-badge--active { background: #dcfce7; color: #16a34a; }
-.status-badge--inactive { background: #f3f4f6; color: #6b7280; }
+.status-badge--active   { background: var(--status-active-bg);   color: var(--status-active-color); }
+.status-badge--inactive { background: var(--status-inactive-bg); color: var(--status-inactive-color); }
 
 .user-card__skills { display: flex; flex-wrap: wrap; gap: 6px; min-height: 24px; }
 .no-skills { font-size: 0.82rem; color: var(--color-text-light); font-style: italic; }
@@ -303,7 +303,7 @@ h1 { margin: 0 0 8px; font-size: 2rem; }
     transition: background 0.15s, border-color 0.15s;
 }
 .skill-check:hover { background: var(--color-bg); }
-.skill-check--selected { border-color: var(--color-primary); background: #f0fdf4; }
+.skill-check--selected { border-color: var(--color-primary); background: var(--skill-check-selected-bg); }
 .skill-check input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--color-primary); flex-shrink: 0; }
 
 .skills-empty { margin: 0; color: var(--color-text-light); font-size: 0.88rem; text-align: center; padding: 8px 0; }

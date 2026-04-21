@@ -26,16 +26,63 @@ withDefaults(defineProps<Props>(), {
   align-items: center;
 }
 
-.badge--green   { background: #dcfce7; color: #16a34a; }
-.badge--teal    { background: #ccfbf1; color: #0f766e; }
-.badge--blue    { background: #dbeafe; color: #2563eb; }
-.badge--indigo  { background: #e0e7ff; color: #4338ca; }
-.badge--purple  { background: #f3e8ff; color: #9333ea; }
-.badge--pink    { background: #fce7f3; color: #db2777; }
-.badge--red     { background: #fee2e2; color: #dc2626; }
-.badge--orange  { background: #ffedd5; color: #ea580c; }
-.badge--yellow  { background: #fef9c3; color: #ca8a04; }
-.badge--lime    { background: #ecfccb; color: #65a30d; }
-.badge--cyan    { background: #cffafe; color: #0891b2; }
-.badge--gray    { background: #f3f4f6; color: #4b5563; }
+.badge--green {
+  background: var(--badge-green-bg);
+  color: var(--badge-green-color);
+}
+
+.badge--teal {
+  background: var(--badge-teal-bg);
+  color: var(--badge-teal-color);
+}
+
+.badge--blue {
+  background: var(--badge-blue-bg);
+  color: var(--badge-blue-color);
+}
+
+.badge--indigo {
+  background: var(--badge-indigo-bg);
+  color: var(--badge-indigo-color);
+}
+
+.badge--purple {
+  background: var(--badge-purple-bg);
+  color: var(--badge-purple-color);
+}
+
+.badge--pink {
+  background: var(--badge-pink-bg);
+  color: var(--badge-pink-color);
+}
+
+.badge--red {
+  background: var(--badge-red-bg);
+  color: var(--badge-red-color);
+}
+
+.badge--orange {
+  background: var(--badge-orange-bg);
+  color: var(--badge-orange-color);
+}
+
+.badge--yellow {
+  background: var(--badge-yellow-bg);
+  color: var(--badge-yellow-color);
+}
+
+.badge--lime {
+  background: var(--badge-lime-bg);
+  color: var(--badge-lime-color);
+}
+
+.badge--cyan {
+  background: var(--badge-cyan-bg);
+  color: var(--badge-cyan-color);
+}
+
+.badge--gray {
+  background: var(--badge-gray-bg);
+  color: var(--badge-gray-color);
+}
 </style>

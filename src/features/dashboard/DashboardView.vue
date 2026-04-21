@@ -12,17 +12,17 @@
 
         <template v-else>
             <div class="metrics-grid">
-                <Card :title="t('dashboard.total_musicians')" icon="musicians">
+                <Card :title="t('dashboard.total_musicians')" icon="musicians" clickable @click="router.push('/users')">
                     <p class="metric-value">{{ totalMusicians }}</p>
                     <p class="metric-caption">{{ totalMusicians }} {{ t('dashboard.active_currently') }}</p>
                 </Card>
 
-                <Card :title="t('dashboard.total_skills')" icon="music">
+                <Card :title="t('dashboard.total_skills')" icon="music" clickable @click="router.push('/skills')">
                     <p class="metric-value">{{ totalSkills }}</p>
                     <p class="metric-caption">{{ t('dashboard.skill_categories') }}</p>
                 </Card>
 
-                <Card :title="t('dashboard.upcoming_events')" icon="home">
+                <Card :title="t('dashboard.upcoming_events')" icon="home" clickable @click="router.push('/schedules')">
                     <p class="metric-value">{{ upcomingServices.length }}</p>
                     <p class="metric-caption">{{ upcomingServices.length }} {{ t('dashboard.scheduled_month') }}</p>
                 </Card>
@@ -34,7 +34,8 @@
                         <li v-if="upcomingServices.length === 0" class="service-empty">
                             {{ t('dashboard.no_services') }}
                         </li>
-                        <li v-for="service in upcomingServices" :key="service.id" class="service-row">
+                        <li v-for="service in upcomingServices" :key="service.id" class="service-row"
+                            @click="router.push('/schedules')">
                             <div>
                                 <p class="service-title">{{ service.name }}</p>
                                 <p class="service-date">{{ formatDate(service.date) }}</p>
@@ -73,6 +74,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import Card from './components/Card.vue'
 import { usersService } from '@/services/usersService'
@@ -83,6 +85,7 @@ import type { Skill } from '@/features/skills/types/Skill'
 import type { Schedule } from '@/features/schedules/types/Schedule'
 
 const { t, locale } = useI18n()
+const router = useRouter()
 
 const isLoading = ref(true)
 const users = ref<User[]>([])
@@ -196,7 +199,7 @@ onMounted(async () => {
     font-size: 2rem;
     line-height: 1;
     font-weight: 700;
-    color: #111827;
+    color: var(--color-text);
 }
 
 .metric-caption {
@@ -237,14 +240,21 @@ onMounted(async () => {
     padding: 14px;
     border: 1px solid var(--border-color);
     border-radius: 10px;
-    background: #fff;
+    background: var(--color-white);
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.service-row:hover {
+    border-color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
 }
 
 .service-title {
     margin: 0;
     font-size: 1.05rem;
     font-weight: 600;
-    color: #111827;
+    color: var(--color-text);
 }
 
 .service-date {
@@ -262,15 +272,15 @@ onMounted(async () => {
 .assigned-badge {
     font-size: 0.82rem;
     font-weight: 600;
-    color: #4c5d90;
-    background: #eef1fb;
+    color: var(--badge-text);
+    background: var(--badge-bg);
     border-radius: 999px;
     padding: 5px 10px;
 }
 
 .service-chevron {
     font-size: 1.4rem;
-    color: #7c8499;
+    color: var(--color-text-light);
     line-height: 1;
 }
 
@@ -281,7 +291,7 @@ onMounted(async () => {
 }
 
 .load-row { padding: 8px 0 14px; }
-.load-row + .load-row { border-top: 1px solid #f0f2f7; }
+.load-row + .load-row { border-top: 1px solid var(--border-color); }
 
 .load-row__top {
     display: flex;
@@ -291,15 +301,15 @@ onMounted(async () => {
 }
 
 .load-name, .load-value, .load-note { margin: 0; }
-.load-name { color: #111827; font-weight: 600; }
-.load-value { font-weight: 600; color: #4b5563; }
+.load-name { color: var(--color-text); font-weight: 600; }
+.load-value { font-weight: 600; color: var(--color-text-light); }
 
 .progress-track {
     margin-top: 8px;
     width: 100%;
     height: 7px;
     border-radius: 999px;
-    background: #dfe4ee;
+    background: var(--color-bg-contrast);
     overflow: hidden;
 }
 
@@ -312,7 +322,7 @@ onMounted(async () => {
 .load-note {
     margin-top: 6px;
     text-align: right;
-    color: #7d8598;
+    color: var(--color-text-light);
     font-size: 0.9rem;
 }
 
