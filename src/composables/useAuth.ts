@@ -16,9 +16,10 @@ import type { LoginCredentials } from '@/types/auth'
 
 export function useAuth() {
   const authStore = useAuthStore()
-  const { user, isLoading, error } = storeToRefs(authStore)
+  const { user, isLoading, error, scopes } = storeToRefs(authStore)
 
   const isAuthenticated = computed<boolean>(() => authStore.isAuthenticated)
+  const isAdmin = computed<boolean>(() => authStore.isAdmin)
 
   async function login(credentials: LoginCredentials): Promise<void> {
     await authStore.login(credentials)
@@ -36,7 +37,9 @@ export function useAuth() {
     user,
     isLoading,
     error,
+    scopes,
     isAuthenticated,
+    isAdmin,
     login,
     loginWithGoogle,
     logout,

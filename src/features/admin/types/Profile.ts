@@ -1,0 +1,20 @@
+export interface Profile {
+  id: string
+  name: string
+  description?: string
+  scopes: string[]
+  createdAt?: string
+  updatedAt?: string
+}
+
+export interface CreateProfilePayload {
+  name: string
+  description?: string
+  scopes?: string[]
+}
+
+export interface UpdateProfilePayload {
+  name: string
+  description?: string
+  scopes?: string[]
+}

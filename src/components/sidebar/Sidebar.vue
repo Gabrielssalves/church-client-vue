@@ -30,7 +30,11 @@ const authStore = useAuthStore()
 const openMenus = ref<string[]>([])
 
 const visibleRoutes = computed(() =>
-  router.options.routes.filter(route => route.meta?.label && route.meta?.showInSidebar !== false) as RouteRecordRaw[]
+  router.options.routes.filter(route => {
+    if (!route.meta?.label || route.meta?.showInSidebar === false) return false
+    if (route.meta?.requiresAdmin && !authStore.isAdmin) return false
+    return true
+  }) as RouteRecordRaw[]
 )
 
 function toggle(path: string) {

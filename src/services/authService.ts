@@ -101,20 +101,20 @@ function normalizeAuthResponse(data: RawApiResponse): AuthResponse {
 // ---------------------------------------------------------------------------
 
 export async function login(credentials: LoginCredentials): Promise<AuthResponse> {
-  const { data } = await authHttpClient.post<RawApiResponse>('/login', credentials)
+  const { data } = await authHttpClient.post<RawApiResponse>('/auth/login', credentials)
   return normalizeAuthResponse(data)
 }
 
 export async function loginWithGoogle(token: string): Promise<AuthResponse> {
-  const { data } = await authHttpClient.post<RawApiResponse>('/google', { token })
+  const { data } = await authHttpClient.post<RawApiResponse>('/auth/google', { token })
   return normalizeAuthResponse(data)
 }
 
 export async function refresh(): Promise<AuthResponse> {
-  const { data } = await authHttpClient.post<RawApiResponse>('/refresh')
+  const { data } = await authHttpClient.post<RawApiResponse>('/auth/refresh')
   return normalizeAuthResponse(data)
 }
 
 export async function logout(): Promise<void> {
-  await authHttpClient.post('/logout')
+  await authHttpClient.post('/auth/logout')
 }

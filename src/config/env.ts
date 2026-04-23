@@ -29,7 +29,7 @@ function optionalEnv(key: string, fallback = ''): string {
 export const env = {
   /**
    * Base URL for the authentication API.
-   * Example: http://localhost:3000/auth
+   * Example: http://localhost:3000
    */
   authBaseUrl: requireEnv('VITE_AUTH_BASE_URL'),
 

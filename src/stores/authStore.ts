@@ -20,6 +20,26 @@ export const useAuthStore = defineStore('auth', {
 
   getters: {
     isAuthenticated: (state): boolean => !!state.user,
+
+    scopes(state): string[] {
+      const token = localStorage.getItem('accessToken')
+      if (!token || !state.user) return []
+      try {
+        const base64 = token.split('.')[1]
+        const padded = base64.padEnd(base64.length + (4 - base64.length % 4) % 4, '=')
+        const payload = JSON.parse(atob(padded)) as Record<string, unknown>
+        const raw = payload.scopes ?? payload.scope ?? payload.roles ?? []
+        if (Array.isArray(raw)) return raw as string[]
+        if (typeof raw === 'string') return raw.split(' ')
+        return []
+      } catch {
+        return []
+      }
+    },
+
+    isAdmin(): boolean {
+      return (this as unknown as { scopes: string[] }).scopes.includes('admin')
+    },
   },
 
   actions: {

@@ -37,15 +37,28 @@ const routes = [
     meta: { requiresAuth: true, label: 'nav.schedules', icon: 'schedules' },
   },
   {
-    path: '/draw',
-    name: 'Draw',
-    meta: { requiresAuth: true, label: 'nav.draw', icon: 'draw' },
+    path: '/admin',
+    name: 'Admin',
+    redirect: '/admin/scopes',
+    meta: { requiresAuth: true, requiresAdmin: false, label: 'nav.admin', icon: 'shield' },
     children: [
       {
-        path: '',
-        name: 'TeamsDraw',
-        component: () => import('@/features/teams/pages/DrawPage.vue'),
-        meta: { label: 'nav.teams_draw', icon: 'users' },
+        path: 'scopes',
+        name: 'AdminScopes',
+        component: () => import('@/features/admin/ScopesView.vue'),
+        meta: { requiresAuth: true, requiresAdmin: false, label: 'nav.admin_scopes', icon: 'key' },
+      },
+      {
+        path: 'profiles',
+        name: 'AdminProfiles',
+        component: () => import('@/features/admin/ProfilesView.vue'),
+        meta: { requiresAuth: true, requiresAdmin: false, label: 'nav.admin_profiles', icon: 'user-check' },
+      },
+      {
+        path: 'users',
+        name: 'AdminUsers',
+        component: () => import('@/features/admin/AdminUsersView.vue'),
+        meta: { requiresAuth: true, requiresAdmin: false, label: 'nav.admin_users', icon: 'user-cog' },
       },
     ],
   },
@@ -63,12 +76,19 @@ const router = createRouter({
 router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore()
   const requiresAuth = to.meta.requiresAuth
+  const requiresAdmin = to.meta.requiresAdmin
 
   if (requiresAuth) {
-    if (authStore.isAuthenticated) return next()
+    if (authStore.isAuthenticated) {
+      if (requiresAdmin && !authStore.isAdmin) return next({ name: 'Dashboard' })
+      return next()
+    }
     if (!authStore.sessionChecked) {
       const restored = await authStore.tryRestoreSession()
-      if (restored) return next()
+      if (restored) {
+        if (requiresAdmin && !authStore.isAdmin) return next({ name: 'Dashboard' })
+        return next()
+      }
     }
     return next({ name: 'Login' })
   }
