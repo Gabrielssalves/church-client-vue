@@ -16,7 +16,7 @@ import type { LoginCredentials } from '@/types/auth'
 
 export function useAuth() {
   const authStore = useAuthStore()
-  const { user, isLoading, error, scopes } = storeToRefs(authStore)
+  const { user, isLoading, error } = storeToRefs(authStore)
 
   const isAuthenticated = computed<boolean>(() => authStore.isAuthenticated)
   const isAdmin = computed<boolean>(() => authStore.isAdmin)
@@ -37,7 +37,6 @@ export function useAuth() {
     user,
     isLoading,
     error,
-    scopes,
     isAuthenticated,
     isAdmin,
     login,
