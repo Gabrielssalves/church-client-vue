@@ -3,8 +3,8 @@
         <li v-for="route in visibleRoutes" :key="route.path" class="sidebar-item">
             <template v-if="!route.children || route.children.length === 0">
                 <RouterLink :to="route.path" class="sidebar-link" active-class="sidebar-link--active"
-                    :title="props.collapsed ? String(route.meta?.label ?? '') : undefined"
-                    :aria-label="props.collapsed ? String(route.meta?.label ?? '') : undefined">
+                    v-tooltip="props.collapsed ? t(String(route.meta?.label ?? '')) : undefined"
+                    :aria-label="props.collapsed ? t(String(route.meta?.label ?? '')) : undefined">
                     <span class="sidebar-icon">
                         <AppIcon :name="getIcon(route)" :size="18" />
                     </span>
@@ -14,7 +14,7 @@
 
             <template v-else>
                 <button type="button" class="sidebar-toggle" @click="toggle(route.path)"
-                    :title="props.collapsed ? t(String(route.meta?.label ?? '')) : undefined"
+                    v-tooltip="props.collapsed ? t(String(route.meta?.label ?? '')) : undefined"
                     :aria-label="props.collapsed ? t(String(route.meta?.label ?? '')) : undefined">
                     <span class="sidebar-icon">
                         <AppIcon :name="getIcon(route)" :size="18" />

@@ -1,8 +1,10 @@
+import type { Scope } from './Scope'
+
 export interface Profile {
   id: string
   name: string
   description?: string
-  scopes: string[]
+  scopes: Scope[]
   createdAt?: string
   updatedAt?: string
 }

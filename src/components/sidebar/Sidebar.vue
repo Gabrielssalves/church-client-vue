@@ -3,7 +3,7 @@
   <nav class="sidebar" :class="{ collapsed: props.collapsed }">
     <SidebarHeader :collapsed="props.collapsed" @toggle="emit('toggle')" />
     <SidebarList :visibleRoutes="visibleRoutes" :collapsed="props.collapsed" :openMenus="openMenus" @toggle="toggle" />
-    <SidebarFooter :collapsed="props.collapsed" @logout="handleLogout" />
+    <SidebarFooter :collapsed="props.collapsed" />
 
   </nav>
 </template>
@@ -41,11 +41,6 @@ function toggle(path: string) {
   openMenus.value = openMenus.value.includes(path)
     ? openMenus.value.filter(p => p !== path)
     : [...openMenus.value, path]
-}
-
-function handleLogout() {
-  authStore.clearSession()
-  router.push('/login')
 }
 </script>
 

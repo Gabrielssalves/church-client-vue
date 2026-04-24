@@ -26,6 +26,7 @@
                     </div>
                     <div class="item-card__info">
                         <h3>{{ scope.name }}</h3>
+                        <code v-if="scope.code" class="scope-code">{{ scope.code }}</code>
                         <p v-if="scope.description">{{ scope.description }}</p>
                     </div>
                 </div>
@@ -47,6 +48,10 @@
                         <div class="field">
                             <label>{{ t('admin.scope_name') }}</label>
                             <input v-model="form.name" type="text" :placeholder="t('admin.scope_name_placeholder')" required />
+                        </div>
+                        <div class="field">
+                            <label>{{ t('admin.scope_code') }}</label>
+                            <input v-model="form.code" type="text" :placeholder="t('admin.scope_code_placeholder')" class="input-mono" required />
                         </div>
                         <div class="field">
                             <label>{{ t('admin.scope_description') }}</label>
@@ -113,18 +118,18 @@ const showFormModal = ref(false)
 const editing = ref<Scope | null>(null)
 const isSubmitting = ref(false)
 const formError = ref('')
-const form = reactive({ name: '', description: '' })
+const form = reactive({ name: '', code: '', description: '' })
 
 function openCreate() {
     editing.value = null
-    form.name = ''; form.description = ''
+    form.name = ''; form.code = ''; form.description = ''
     formError.value = ''
     showFormModal.value = true
 }
 
 function openEdit(scope: Scope) {
     editing.value = scope
-    form.name = scope.name; form.description = scope.description ?? ''
+    form.name = scope.name; form.code = scope.code ?? ''; form.description = scope.description ?? ''
     formError.value = ''
     showFormModal.value = true
 }
@@ -135,7 +140,7 @@ async function submitForm() {
     formError.value = ''
     isSubmitting.value = true
     try {
-        const payload = { name: form.name, description: form.description || undefined }
+        const payload = { name: form.name, code: form.code || undefined, description: form.description || undefined }
         if (editing.value) {
             const updated = await adminScopesService.update(editing.value.id, payload)
             const idx = scopes.value.findIndex(s => s.id === editing.value!.id)
@@ -211,9 +216,12 @@ h1 { margin: 0 0 8px; font-size: 2rem; }
 
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field label { font-size: 0.9rem; font-weight: 600; color: var(--color-text); }
-.field input[type="text"] { padding: 9px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-family: inherit; font-size: 0.95rem; outline: none; transition: border-color 0.2s; }
+.field input[type="text"] { padding: 9px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-family: inherit; font-size: 0.95rem; outline: none; transition: border-color 0.2s; background: var(--color-white); color: var(--color-text); }
 .field input[type="text"]:focus { border-color: var(--color-primary); }
+.input-mono { font-family: monospace !important; font-size: 0.9rem !important; letter-spacing: 0.02em; }
 .form-error { margin: 0; color: #dc2626; font-size: 0.88rem; }
+
+.scope-code { display: inline-block; font-family: monospace; font-size: 0.75rem; font-weight: 600; padding: 1px 7px; border-radius: 4px; background: var(--color-bg-contrast); color: var(--color-text); letter-spacing: 0.03em; margin-top: 2px; }
 
 @media (max-width: 920px) {
     .items-grid { grid-template-columns: 1fr; }

@@ -3,6 +3,7 @@ export interface User {
   name?: string
   email?: string
   picture?: string
+  claims?: string[]
   [key: string]: unknown
 }
 

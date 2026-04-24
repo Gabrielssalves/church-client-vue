@@ -37,6 +37,12 @@ const routes = [
     meta: { requiresAuth: true, label: 'nav.schedules', icon: 'schedules' },
   },
   {
+    path: '/profile',
+    name: 'Profile',
+    component: () => import('@/features/profile/ProfilePage.vue'),
+    meta: { requiresAuth: true, showInSidebar: false },
+  },
+  {
     path: '/admin',
     name: 'Admin',
     redirect: '/admin/scopes',

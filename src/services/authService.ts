@@ -88,8 +88,8 @@ function normalizeAuthResponse(data: RawApiResponse): AuthResponse {
           id: typeof rawUser.id === 'string' ? rawUser.id : undefined,
           name: typeof rawUser.name === 'string' ? rawUser.name : undefined,
           email: typeof rawUser.email === 'string' ? rawUser.email : undefined,
-          picture:
-            typeof rawUser.picture === 'string' ? rawUser.picture : undefined,
+          picture: typeof rawUser.picture === 'string' ? rawUser.picture : undefined,
+          claims: Array.isArray(rawUser.claims) ? (rawUser.claims as string[]) : undefined,
         }
       : null
 

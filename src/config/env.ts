@@ -33,6 +33,8 @@ export const env = {
    */
   authBaseUrl: requireEnv('VITE_AUTH_BASE_URL'),
 
+  externalIntegrationsBaseUrl: requireEnv('VITE_EXTERNAL_INTEGRATIOS_BASE_URL'),
+
   /**
    * Base URL for the main application API.
    * Example: http://localhost:3000

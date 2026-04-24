@@ -6,14 +6,17 @@ import {
     ChevronLeft,
     ChevronRight,
     Circle,
+    Globe,
     Home,
     LogOut,
     Moon,
     Music,
+    Pencil,
     Shield,
     Shuffle,
     Star,
     Sun,
+    User,
     Users
 } from 'lucide-vue-next'
 
@@ -51,6 +54,9 @@ const iconMap = {
     schedules: Calendar,
     sun: Sun,
     moon: Moon,
+    user: User,
+    globe: Globe,
+    pencil: Pencil,
     default: Shield
 } as const
 

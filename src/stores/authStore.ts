@@ -99,6 +99,12 @@ export const useAuthStore = defineStore('auth', {
       localStorage.removeItem('accessToken')
     },
 
+    updateUser(updates: Partial<User>): void {
+      if (!this.user) return
+      this.user = { ...this.user, ...updates }
+      localStorage.setItem('authUser', JSON.stringify(this.user))
+    },
+
     // ---------------------------------------------------------------------------
     // Private helpers (prefixed with _ by convention)
     // ---------------------------------------------------------------------------

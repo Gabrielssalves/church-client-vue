@@ -30,7 +30,7 @@
                     </div>
                 </div>
                 <div v-if="profile.scopes?.length" class="item-card__scopes">
-                    <span v-for="scope in profile.scopes" :key="scope" class="scope-chip">{{ scope }}</span>
+                    <span v-for="scope in profile.scopes" :key="scope.id" class="scope-chip">{{ scope.name }}</span>
                 </div>
                 <div class="item-card__actions">
                     <BaseButton variant="secondary" size="sm" @click="openEdit(profile)">{{ t('common.edit') }}</BaseButton>
@@ -59,9 +59,10 @@
                             <label>{{ t('admin.profile_scopes') }}</label>
                             <div class="scopes-check-list">
                                 <label v-for="scope in allScopes" :key="scope.id" class="scope-check"
-                                    :class="{ 'scope-check--selected': form.scopes.includes(scope.name) }">
-                                    <input type="checkbox" :value="scope.name" v-model="form.scopes" />
+                                    :class="{ 'scope-check--selected': form.scopes.includes(scope.code ?? scope.name) }">
+                                    <input type="checkbox" :value="scope.code ?? scope.name" v-model="form.scopes" />
                                     <span class="scope-chip">{{ scope.name }}</span>
+                                    <span v-if="scope.code" class="scope-chip-code">{{ scope.code }}</span>
                                 </label>
                                 <p v-if="allScopes.length === 0" class="scopes-empty">
                                     {{ t('admin.profile_no_scopes') }}
@@ -150,7 +151,7 @@ function openEdit(profile: Profile) {
     editing.value = profile
     form.name = profile.name
     form.description = profile.description ?? ''
-    form.scopes = [...(profile.scopes ?? [])]
+    form.scopes = (profile.scopes ?? []).map(s => s.code ?? s.name)
     formError.value = ''
     showFormModal.value = true
 }
