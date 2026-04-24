@@ -46,8 +46,8 @@ export function createHttpClient(baseURL: string): AxiosInstance {
   })
 
   // Request interceptor — attach access token when present
-  instance.interceptors.request.use((config) => {
-    const token = localStorage.getItem('accessToken')
+  instance.interceptors.request.use(async (config) => {
+    const token = (await cookieStore.get('Authentication'))?.value
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -62,7 +62,7 @@ export function createHttpClient(baseURL: string): AxiosInstance {
 
       // 401 → clear stale token; the router guard will redirect to /login
       if (axios.isAxiosError(error) && error.response?.status === 401) {
-        localStorage.removeItem('accessToken')
+        cookieStore.delete('Authentication')
         localStorage.removeItem('authUser')
       }
 

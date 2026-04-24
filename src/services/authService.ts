@@ -43,6 +43,8 @@ interface RawApiUser {
   name?: string
   email?: string
   picture?: string
+  claims?: unknown
+  scopes?: unknown
   accessToken?: string
   token?: string
   tokens?: RawTokens
@@ -89,7 +91,11 @@ function normalizeAuthResponse(data: RawApiResponse): AuthResponse {
           name: typeof rawUser.name === 'string' ? rawUser.name : undefined,
           email: typeof rawUser.email === 'string' ? rawUser.email : undefined,
           picture: typeof rawUser.picture === 'string' ? rawUser.picture : undefined,
-          claims: Array.isArray(rawUser.claims) ? (rawUser.claims as string[]) : undefined,
+          claims: Array.isArray(rawUser.scopes)
+            ? (rawUser.scopes as string[])
+            : Array.isArray(rawUser.claims)
+              ? (rawUser.claims as string[])
+              : undefined,
         }
       : null
 

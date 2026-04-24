@@ -3,6 +3,29 @@ import * as authService from '@/services/authService'
 import type { User, LoginCredentials, AppError } from '@/types/auth'
 import { normalizeError } from '@/lib/http'
 
+function getCookie(name: string): string | undefined {
+  const match = document.cookie.match(new RegExp(`(?:^|; )${name}=([^;]*)`))
+  return match ? decodeURIComponent(match[1]!) : undefined
+}
+
+function decodeJwtScopes(token: string): string[] | undefined {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]!)) as Record<string, unknown>
+    const scopes = payload.scopes ?? payload.claims
+    return Array.isArray(scopes) ? (scopes as string[]) : undefined
+  } catch {
+    return undefined
+  }
+}
+
+function enrichWithCookieScopes(user: User): void {
+  if (user.claims?.length) return
+  const token = getCookie('Authentication')
+  if (!token) return
+  const scopes = decodeJwtScopes(token)
+  if (scopes) user.claims = scopes
+}
+
 interface AuthState {
   user: User | null
   sessionChecked: boolean
@@ -21,21 +44,18 @@ export const useAuthStore = defineStore('auth', {
   getters: {
     isAuthenticated: (state): boolean => !!state.user,
     isAdmin(): boolean {
-      return true
+      return Array.isArray(this.user?.claims) && this.user!.claims!.includes('admin')
     },
   },
 
   actions: {
-    /**
-     * Called once on app boot (main.ts) to rehydrate user from localStorage
-     * without making a network call. A full session validation happens lazily
-     * via tryRestoreSession() when a protected route is accessed.
-     */
     initialize(): void {
       const rawUser = localStorage.getItem('authUser')
       if (rawUser) {
         try {
-          this.user = JSON.parse(rawUser) as User
+          const user = JSON.parse(rawUser) as User
+          enrichWithCookieScopes(user)
+          this.user = user
         } catch {
           localStorage.removeItem('authUser')
         }
@@ -47,7 +67,7 @@ export const useAuthStore = defineStore('auth', {
       this.error = null
       try {
         const data = await authService.login(credentials)
-        this._applySession(data.user, data.accessToken)
+        await this._applySession(data.user)
       } catch (err) {
         this.error = normalizeError(err)
         throw this.error
@@ -61,7 +81,7 @@ export const useAuthStore = defineStore('auth', {
       this.error = null
       try {
         const data = await authService.loginWithGoogle(token)
-        this._applySession(data.user, data.accessToken)
+        await this._applySession(data.user)
       } catch (err) {
         this.error = normalizeError(err)
         throw this.error
@@ -74,7 +94,7 @@ export const useAuthStore = defineStore('auth', {
       this.sessionChecked = true
       try {
         const data = await authService.refresh()
-        this._applySession(data.user, data.accessToken)
+        await this._applySession(data.user)
         return true
       } catch {
         this.clearSession()
@@ -96,7 +116,7 @@ export const useAuthStore = defineStore('auth', {
       this.sessionChecked = true
       this.error = null
       localStorage.removeItem('authUser')
-      localStorage.removeItem('accessToken')
+      cookieStore.delete('Authentication')
     },
 
     updateUser(updates: Partial<User>): void {
@@ -109,15 +129,21 @@ export const useAuthStore = defineStore('auth', {
     // Private helpers (prefixed with _ by convention)
     // ---------------------------------------------------------------------------
 
-    _applySession(user: User | null, accessToken?: string | null): void {
+    async _applySession(user: User | null): Promise<void> {
+      if (user && !user.claims?.length) {
+        try {
+          const cookie = await cookieStore.get('Authentication')
+          const scopes = cookie?.value ? decodeJwtScopes(cookie.value) : undefined
+          if (scopes) user.claims = scopes
+        } catch {
+          // cookieStore unavailable (e.g. SSR / old browser) — fall back to sync read
+          enrichWithCookieScopes(user)
+        }
+      }
       this.user = user
       this.sessionChecked = true
-
       if (user) {
         localStorage.setItem('authUser', JSON.stringify(user))
-      }
-      if (accessToken) {
-        localStorage.setItem('accessToken', accessToken)
       }
     },
   },

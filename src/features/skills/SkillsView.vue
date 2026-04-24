@@ -5,7 +5,7 @@
                 <h1>{{ t('skills.title') }}</h1>
                 <p>{{ t('skills.subtitle') }}</p>
             </div>
-            <BaseButton variant="primary" size="lg" @click="openCreate">{{ t('skills.add') }}</BaseButton>
+            <BaseButton v-if="canWrite" variant="primary" size="lg" @click="openCreate">{{ t('skills.add') }}</BaseButton>
         </div>
 
         <div v-if="isLoading" class="loading-state">
@@ -13,21 +13,21 @@
             <p>{{ t('skills.loading') }}</p>
         </div>
 
-        <div v-else-if="skills.length === 0" class="empty-state">
+        <div v-else-if="canRead && skills.length === 0" class="empty-state">
             <p>{{ t('skills.empty') }}</p>
-            <BaseButton variant="primary" @click="openCreate">{{ t('skills.add_first') }}</BaseButton>
+            <BaseButton v-if="canWrite" variant="primary" @click="openCreate">{{ t('skills.add_first') }}</BaseButton>
         </div>
 
-        <div v-else class="skills-grid">
+        <div v-else-if="canRead" class="skills-grid">
             <BaseCard v-for="skill in skills" :key="skill.id" class="skill-card">
                 <div class="skill-card__body">
                     <span class="skill-dot" :style="dotStyle(skill.color)" />
                     <h3>{{ skill.name }}</h3>
                     <BaseBadge :color="skill.color" class="skill-preview-badge">{{ t(`colors.${skill.color}`) }}</BaseBadge>
                 </div>
-                <div class="skill-card__actions">
-                    <BaseButton variant="secondary" size="sm" @click="openEdit(skill)">{{ t('common.edit') }}</BaseButton>
-                    <BaseButton variant="danger" size="sm" @click="confirmDelete(skill)">{{ t('common.delete') }}</BaseButton>
+                <div v-if="canWrite || canDelete" class="skill-card__actions">
+                    <BaseButton v-if="canWrite" variant="secondary" size="sm" @click="openEdit(skill)">{{ t('common.edit') }}</BaseButton>
+                    <BaseButton v-if="canDelete" variant="danger" size="sm" @click="confirmDelete(skill)">{{ t('common.delete') }}</BaseButton>
                 </div>
             </BaseCard>
         </div>
@@ -106,8 +106,10 @@ import BaseCard from '@/components/BaseCard.vue'
 import BaseBadge from '@/components/BaseBadge.vue'
 import { skillsService } from '@/services/skillsService'
 import { SKILL_COLORS, type Skill, type SkillColor } from '@/features/skills/types/Skill'
+import { useScope } from '@/composables/useScope'
 
 const { t } = useI18n()
+const { canRead, canWrite, canDelete } = useScope('skills')
 
 const isLoading = ref(true)
 const skills = ref<Skill[]>([])

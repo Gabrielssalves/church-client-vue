@@ -5,7 +5,7 @@
                 <h1>{{ t('users.title') }}</h1>
                 <p>{{ t('users.subtitle') }}</p>
             </div>
-            <BaseButton variant="primary" size="lg" @click="openCreate">{{ t('users.add') }}</BaseButton>
+            <BaseButton v-if="canWrite" variant="primary" size="lg" @click="openCreate">{{ t('users.add') }}</BaseButton>
         </div>
 
         <div v-if="isLoading" class="loading-state">
@@ -13,12 +13,12 @@
             <p>{{ t('users.loading') }}</p>
         </div>
 
-        <div v-else-if="users.length === 0" class="empty-state">
+        <div v-else-if="canRead && users.length === 0" class="empty-state">
             <p>{{ t('users.empty') }}</p>
-            <BaseButton variant="primary" @click="openCreate">{{ t('users.add_first') }}</BaseButton>
+            <BaseButton v-if="canWrite" variant="primary" @click="openCreate">{{ t('users.add_first') }}</BaseButton>
         </div>
 
-        <div v-else class="users-grid">
+        <div v-else-if="canRead" class="users-grid">
             <BaseCard v-for="user in users" :key="user.id" class="user-card">
                 <div class="user-card__header">
                     <BaseAvatar :name="user.name" />
@@ -42,9 +42,9 @@
                     <span v-if="user.skills.length === 0" class="no-skills">{{ t('users.no_skills') }}</span>
                 </div>
 
-                <div class="user-card__actions">
-                    <BaseButton variant="secondary" size="sm" @click="openEdit(user)">{{ t('common.edit') }}</BaseButton>
-                    <BaseButton variant="danger" size="sm" @click="confirmDelete(user)">{{ t('common.delete') }}</BaseButton>
+                <div v-if="canWrite || canDelete" class="user-card__actions">
+                    <BaseButton v-if="canWrite" variant="secondary" size="sm" @click="openEdit(user)">{{ t('common.edit') }}</BaseButton>
+                    <BaseButton v-if="canDelete" variant="danger" size="sm" @click="confirmDelete(user)">{{ t('common.delete') }}</BaseButton>
                 </div>
             </BaseCard>
         </div>
@@ -138,8 +138,10 @@ import { usersService } from '@/services/usersService'
 import { skillsService } from '@/services/skillsService'
 import type { User } from '@/features/users/types/User'
 import type { Skill } from '@/features/skills/types/Skill'
+import { useScope } from '@/composables/useScope'
 
 const { t } = useI18n()
+const { canRead, canWrite, canDelete } = useScope('users')
 
 const isLoading = ref(true)
 const users = ref<User[]>([])

@@ -1,6 +1,18 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 
+declare module 'vue-router' {
+  interface RouteMeta {
+    requiresAuth?: boolean
+    requiresAdmin?: boolean
+    requiredScope?: string
+    label?: string
+    icon?: string
+    showInSidebar?: boolean
+    hideSidebar?: boolean
+  }
+}
+
 const routes = [
   {
     path: '/login',
@@ -22,19 +34,19 @@ const routes = [
     path: '/users',
     name: 'Users',
     component: () => import('@/features/users/UsersView.vue'),
-    meta: { requiresAuth: true, label: 'nav.users', icon: 'users' },
+    meta: { requiresAuth: true, requiredScope: 'users', label: 'nav.users', icon: 'users' },
   },
   {
     path: '/skills',
     name: 'Skills',
     component: () => import('@/features/skills/SkillsView.vue'),
-    meta: { requiresAuth: true, label: 'nav.skills', icon: 'skills' },
+    meta: { requiresAuth: true, requiredScope: 'skills', label: 'nav.skills', icon: 'skills' },
   },
   {
     path: '/schedules',
     name: 'Schedules',
     component: () => import('@/features/schedules/SchedulesView.vue'),
-    meta: { requiresAuth: true, label: 'nav.schedules', icon: 'schedules' },
+    meta: { requiresAuth: true, requiredScope: 'schedules', label: 'nav.schedules', icon: 'schedules' },
   },
   {
     path: '/profile',
@@ -58,13 +70,13 @@ const routes = [
         path: 'profiles',
         name: 'AdminProfiles',
         component: () => import('@/features/admin/ProfilesView.vue'),
-        meta: { requiresAuth: true, requiresAdmin: true, label: 'nav.admin_profiles', icon: 'user-check' },
+        meta: { requiresAuth: true, requiresAdmin: true, label: 'nav.admin_profiles', icon: 'group' },
       },
       {
         path: 'users',
         name: 'AdminUsers',
         component: () => import('@/features/admin/AdminUsersView.vue'),
-        meta: { requiresAuth: true, requiresAdmin: true, label: 'nav.admin_users', icon: 'user-cog' },
+        meta: { requiresAuth: true, requiresAdmin: true, label: 'nav.admin_users', icon: 'user' },
       },
     ],
   },
@@ -79,28 +91,35 @@ const router = createRouter({
   routes,
 })
 
+function hasRequiredScope(claims: string[], resource: string): boolean {
+  return claims.some(
+    c => c === `${resource}:read` || c === `${resource}:write` || c === `${resource}:delete`,
+  )
+}
+
 router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore()
-  const requiresAuth = to.meta.requiresAuth
-  const requiresAdmin = to.meta.requiresAdmin
-
-  if (requiresAuth) {
-    if (authStore.isAuthenticated) {
-      if (requiresAdmin && !authStore.isAdmin) return next({ name: 'Dashboard' })
-      return next()
-    }
-    if (!authStore.sessionChecked) {
-      const restored = await authStore.tryRestoreSession()
-      if (restored) {
-        if (requiresAdmin && !authStore.isAdmin) return next({ name: 'Dashboard' })
-        return next()
-      }
-    }
-    return next({ name: 'Login' })
+  if (!authStore.sessionChecked) {
+    await authStore.tryRestoreSession()
   }
 
   if (to.name === 'Login' && authStore.isAuthenticated) {
     return next({ name: 'Dashboard' })
+  }
+
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    return next({ name: 'Login' })
+  }
+
+  if (to.meta.requiresAdmin && !authStore.isAdmin) {
+    return next({ name: 'Dashboard' })
+  }
+
+  if (to.meta.requiredScope && !authStore.isAdmin) {
+    const claims = authStore.user?.claims ?? []
+    if (!hasRequiredScope(claims, to.meta.requiredScope)) {
+      return next({ name: 'Dashboard' })
+    }
   }
 
   return next()

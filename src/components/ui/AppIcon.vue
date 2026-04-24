@@ -17,7 +17,9 @@ import {
     Star,
     Sun,
     User,
-    Users
+    Users,
+    Key,
+    Group
 } from 'lucide-vue-next'
 
 const props = withDefaults(
@@ -57,6 +59,8 @@ const iconMap = {
     user: User,
     globe: Globe,
     pencil: Pencil,
+    key: Key,
+    group: Group,
     default: Shield
 } as const
 

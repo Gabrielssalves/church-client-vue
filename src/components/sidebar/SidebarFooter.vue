@@ -58,6 +58,7 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
+import { toggleLocale } from '@/plugins/i18n'
 import AppIcon from '@/components/ui/AppIcon.vue'
 import BaseAvatar from '@/components/BaseAvatar.vue'
 

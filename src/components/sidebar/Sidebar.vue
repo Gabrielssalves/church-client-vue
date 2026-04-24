@@ -33,6 +33,13 @@ const visibleRoutes = computed(() =>
   router.options.routes.filter(route => {
     if (!route.meta?.label || route.meta?.showInSidebar === false) return false
     if (route.meta?.requiresAdmin && !authStore.isAdmin) return false
+    if (route.meta?.requiredScope && !authStore.isAdmin) {
+      const resource = route.meta.requiredScope as string
+      const claims = authStore.user?.claims ?? []
+      return claims.some(
+        c => c === `${resource}:read` || c === `${resource}:write` || c === `${resource}:delete`,
+      )
+    }
     return true
   }) as RouteRecordRaw[]
 )

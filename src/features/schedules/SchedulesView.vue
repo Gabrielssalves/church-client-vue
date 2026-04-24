@@ -5,7 +5,7 @@
                 <h1>{{ t('schedules.title') }}</h1>
                 <p>{{ t('schedules.subtitle') }}</p>
             </div>
-            <div class="header-actions">
+            <div v-if="canWrite" class="header-actions">
                 <BaseButton variant="secondary" size="lg" @click="openCreate">{{ t('schedules.create_manual') }}</BaseButton>
                 <BaseButton variant="primary" size="lg" @click="openGenerate">{{ t('schedules.generate_auto') }}</BaseButton>
             </div>
@@ -16,15 +16,15 @@
             <p>{{ t('schedules.loading') }}</p>
         </div>
 
-        <div v-else-if="schedules.length === 0" class="empty-state">
+        <div v-else-if="canRead && schedules.length === 0" class="empty-state">
             <p>{{ t('schedules.empty') }}</p>
-            <div class="empty-actions">
+            <div v-if="canWrite" class="empty-actions">
                 <BaseButton variant="secondary" @click="openCreate">{{ t('schedules.create_first_manual') }}</BaseButton>
                 <BaseButton variant="primary" @click="openGenerate">{{ t('schedules.create_first_auto') }}</BaseButton>
             </div>
         </div>
 
-        <div v-else class="schedules-list">
+        <div v-else-if="canRead" class="schedules-list">
             <BaseCard v-for="schedule in sortedSchedules" :key="schedule.id" class="schedule-card">
                 <div class="schedule-card__body">
                     <div class="schedule-icon">
@@ -36,8 +36,8 @@
                     </div>
                     <div class="schedule-card__meta-actions">
                         <span class="assigned-pill">{{ schedule.users.length }} {{ t('schedules.musicians_count') }}</span>
-                        <BaseButton variant="secondary" size="sm" @click="openEdit(schedule)">{{ t('common.edit') }}</BaseButton>
-                        <BaseButton variant="danger" size="sm" @click="confirmDelete(schedule)">{{ t('common.delete') }}</BaseButton>
+                        <BaseButton v-if="canWrite" variant="secondary" size="sm" @click="openEdit(schedule)">{{ t('common.edit') }}</BaseButton>
+                        <BaseButton v-if="canDelete" variant="danger" size="sm" @click="confirmDelete(schedule)">{{ t('common.delete') }}</BaseButton>
                     </div>
                 </div>
 
@@ -46,10 +46,10 @@
                         <BaseAvatar :name="getUserName(su.userId)" :size="28" />
                         <span class="user-name">{{ getUserName(su.userId) }}</span>
                         <BaseBadge :color="getSkillColor(su.skillId)">{{ getSkillName(su.skillId) }}</BaseBadge>
-                        <button class="remove-user-btn" :title="t('common.remove')" @click="removeUser(schedule, su.id)">×</button>
+                        <button v-if="canWrite" class="remove-user-btn" :title="t('common.remove')" @click="removeUser(schedule, su.id)">×</button>
                     </div>
 
-                    <button class="add-user-btn" @click="openAddUser(schedule)">
+                    <button v-if="canWrite" class="add-user-btn" @click="openAddUser(schedule)">
                         <span>+</span> {{ t('schedules.add_musician_btn') }}
                     </button>
                 </div>
@@ -256,8 +256,10 @@ import { usersService } from '@/services/usersService'
 import type { Schedule, SkillConfig } from '@/features/schedules/types/Schedule'
 import type { Skill } from '@/features/skills/types/Skill'
 import type { User } from '@/features/users/types/User'
+import { useScope } from '@/composables/useScope'
 
 const { t, locale } = useI18n()
+const { canRead, canWrite, canDelete } = useScope('schedules')
 
 const DAYS_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
