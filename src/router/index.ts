@@ -97,11 +97,8 @@ function hasRequiredScope(claims: string[], resource: string): boolean {
   )
 }
 
-router.beforeEach(async (to, _from, next) => {
+router.beforeEach((to, _from, next) => {
   const authStore = useAuthStore()
-  if (!authStore.sessionChecked) {
-    await authStore.tryRestoreSession()
-  }
 
   if (to.name === 'Login' && authStore.isAuthenticated) {
     return next({ name: 'Dashboard' })

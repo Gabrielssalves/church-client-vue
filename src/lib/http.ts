@@ -1,21 +1,32 @@
-/**
- * Centralised Axios HTTP client.
- *
- * All API communication in the app should import from here rather than
- * creating ad-hoc axios instances. This gives a single place to manage:
- *   - Base URL configuration
- *   - Auth token injection (request interceptor)
- *   - Normalised error handling (response interceptor)
- *   - withCredentials for cookie-based sessions
- */
-
-import axios, { type AxiosError, type AxiosInstance, type AxiosResponse } from 'axios'
+import axios, {
+  type AxiosError,
+  type AxiosInstance,
+  type AxiosResponse,
+  type InternalAxiosRequestConfig,
+} from 'axios'
 import { env } from '@/config/env'
 import type { AppError } from '@/types/auth'
 
-// ---------------------------------------------------------------------------
-// Error normalisation
-// ---------------------------------------------------------------------------
+let _accessToken: string | null = null
+
+export function setAccessToken(token: string | null): void {
+  _accessToken = token
+}
+
+let _isRefreshing = false
+let _pendingRequests: Array<(token: string | null) => void> = []
+
+function flushQueue(token: string | null): void {
+  _pendingRequests.forEach(resolve => resolve(token))
+  _pendingRequests = []
+}
+
+function extractAccessToken(data: unknown): string | null {
+  if (!data || typeof data !== 'object') return null
+  const d = data as Record<string, unknown>
+  const payload = (d.result ?? d.data ?? d) as Record<string, unknown>
+  return (payload.accessToken as string | undefined) ?? null
+}
 
 export function normalizeError(err: unknown): AppError {
   if (axios.isAxiosError(err)) {
@@ -32,57 +43,72 @@ export function normalizeError(err: unknown): AppError {
   return { message: 'An unexpected error occurred', code: 'UNKNOWN_ERROR' }
 }
 
-// ---------------------------------------------------------------------------
-// Factory — exported so feature-level services can create scoped instances
-// ---------------------------------------------------------------------------
-
 export function createHttpClient(baseURL: string): AxiosInstance {
   const instance = axios.create({
     baseURL,
     withCredentials: true,
-    headers: {
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
   })
 
-  // Request interceptor — attach access token when present
-  instance.interceptors.request.use(async (config) => {
-    const token = (await cookieStore.get('Authentication'))?.value
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
+  instance.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+    if (_accessToken) {
+      config.headers.Authorization = `Bearer ${_accessToken}`
     }
     return config
   })
 
-  // Response interceptor — unwrap data and surface errors uniformly
   instance.interceptors.response.use(
     (response: AxiosResponse) => response,
-    (error: unknown) => {
-      const appError = normalizeError(error)
-
-      // 401 → clear stale token; the router guard will redirect to /login
-      if (axios.isAxiosError(error) && error.response?.status === 401) {
-        cookieStore.delete('Authentication')
-        localStorage.removeItem('authUser')
+    async (error: unknown) => {
+      if (!axios.isAxiosError(error)) {
+        return Promise.reject(normalizeError(error))
       }
 
-      return Promise.reject(appError)
-    }
+      const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
+
+      if (error.response?.status !== 401 || originalRequest._retry) {
+        return Promise.reject(normalizeError(error))
+      }
+
+      if (_isRefreshing) {
+        return new Promise<AxiosResponse>((resolve, reject) => {
+          _pendingRequests.push(token => {
+            if (!token) return reject(normalizeError(error))
+            originalRequest.headers.Authorization = `Bearer ${token}`
+            resolve(instance(originalRequest))
+          })
+        })
+      }
+
+      originalRequest._retry = true
+      _isRefreshing = true
+
+      try {
+        const res = await axios.post(
+          `${env.authBaseUrl}/auth/refresh`,
+          {},
+          { withCredentials: true },
+        )
+        const newToken = extractAccessToken(res.data)
+        setAccessToken(newToken)
+        flushQueue(newToken)
+        originalRequest.headers.Authorization = `Bearer ${newToken}`
+        return instance(originalRequest)
+      } catch {
+        setAccessToken(null)
+        localStorage.removeItem('authUser')
+        flushQueue(null)
+        window.location.replace('/#/login')
+        return Promise.reject(normalizeError(error))
+      } finally {
+        _isRefreshing = false
+      }
+    },
   )
 
   return instance
 }
 
-// ---------------------------------------------------------------------------
-// Default auth HTTP client — used by authService
-// ---------------------------------------------------------------------------
-
 export const authHttpClient = createHttpClient(env.authBaseUrl)
-
 export const externalIntegrationsHttpClient = createHttpClient(env.externalIntegrationsBaseUrl)
-
-// ---------------------------------------------------------------------------
-// Main API HTTP client — used by feature services
-// ---------------------------------------------------------------------------
-
 export const apiHttpClient = createHttpClient(env.apiBaseUrl)

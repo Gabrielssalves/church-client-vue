@@ -3,8 +3,7 @@ export interface User {
   name?: string
   email?: string
   picture?: string
-  claims?: string[]
-  [key: string]: unknown
+  claims: string[]
 }
 
 export interface LoginCredentials {
@@ -13,7 +12,7 @@ export interface LoginCredentials {
 }
 
 export interface AuthResponse {
-  accessToken?: string | null
+  accessToken: string | null
   user: User | null
 }
 

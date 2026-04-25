@@ -21,4 +21,10 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
+  build: {
+    sourcemap: true,
+  },
+  server: {
+    sourcemapIgnoreList: () => false,
+  },
 })
