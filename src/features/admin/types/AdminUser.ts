@@ -3,7 +3,7 @@ export interface AdminUser {
   name?: string
   email: string
   active: boolean
-  profiles: string[]
+  profile?: { id: string; name: string; description?: string }
   createdAt?: string
   updatedAt?: string
 }
@@ -13,12 +13,12 @@ export interface CreateAdminUserPayload {
   email: string
   password: string
   active?: boolean
-  profiles?: string[]
+  profileId?: string
 }
 
 export interface UpdateAdminUserPayload {
   name?: string
   email?: string
   active?: boolean
-  profiles?: string[]
+  profileId?: string
 }

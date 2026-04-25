@@ -59,8 +59,8 @@
                             <label>{{ t('admin.profile_scopes') }}</label>
                             <div class="scopes-check-list">
                                 <label v-for="scope in allScopes" :key="scope.id" class="scope-check"
-                                    :class="{ 'scope-check--selected': form.scopes.includes(scope.code ?? scope.name) }">
-                                    <input type="checkbox" :value="scope.code ?? scope.name" v-model="form.scopes" />
+                                    :class="{ 'scope-check--selected': form.scopeIds.includes(scope.id) }">
+                                    <input type="checkbox" :value="scope.id" v-model="form.scopeIds" />
                                     <span class="scope-chip">{{ scope.name }}</span>
                                     <span v-if="scope.code" class="scope-chip-code">{{ scope.code }}</span>
                                 </label>
@@ -138,11 +138,11 @@ const showFormModal = ref(false)
 const editing = ref<Profile | null>(null)
 const isSubmitting = ref(false)
 const formError = ref('')
-const form = reactive({ name: '', description: '', scopes: [] as string[] })
+const form = reactive({ name: '', description: '', scopeIds: [] as string[] })
 
 function openCreate() {
     editing.value = null
-    form.name = ''; form.description = ''; form.scopes = []
+    form.name = ''; form.description = ''; form.scopeIds = []
     formError.value = ''
     showFormModal.value = true
 }
@@ -151,7 +151,7 @@ function openEdit(profile: Profile) {
     editing.value = profile
     form.name = profile.name
     form.description = profile.description ?? ''
-    form.scopes = (profile.scopes ?? []).map(s => s.code ?? s.name)
+    form.scopeIds = (profile.scopes ?? []).map(s => s.id)
     formError.value = ''
     showFormModal.value = true
 }
@@ -162,7 +162,7 @@ async function submitForm() {
     formError.value = ''
     isSubmitting.value = true
     try {
-        const payload = { name: form.name, description: form.description || undefined, scopes: form.scopes }
+        const payload = { name: form.name, description: form.description || undefined, scopeIds: form.scopeIds }
         if (editing.value) {
             const updated = await adminProfilesService.update(editing.value.id, payload)
             const idx = profiles.value.findIndex(p => p.id === editing.value!.id)

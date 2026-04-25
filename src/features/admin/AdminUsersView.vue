@@ -33,8 +33,8 @@
                         <small>{{ user.email }}</small>
                     </div>
                 </div>
-                <div v-if="user.profiles?.length" class="user-card__profiles">
-                    <span v-for="profile in user.profiles" :key="profile" class="profile-chip">{{ profile }}</span>
+                <div v-if="user.profile" class="user-card__profiles">
+                    <span class="profile-chip">{{ user.profile.name }}</span>
                 </div>
                 <div class="user-card__actions">
                     <BaseButton variant="secondary" size="sm" @click="openEdit(user)">{{ t('common.edit') }}</BaseButton>
@@ -72,9 +72,13 @@
                         <div class="field">
                             <label>{{ t('admin.user_profiles') }}</label>
                             <div class="profiles-check-list">
+                                <label class="profile-check" :class="{ 'profile-check--selected': form.profileId === '' }">
+                                    <input type="radio" value="" v-model="form.profileId" />
+                                    <span class="profile-chip">{{ t('admin.user_no_profile') }}</span>
+                                </label>
                                 <label v-for="profile in allProfiles" :key="profile.id" class="profile-check"
-                                    :class="{ 'profile-check--selected': form.profiles.includes(profile.name) }">
-                                    <input type="checkbox" :value="profile.name" v-model="form.profiles" />
+                                    :class="{ 'profile-check--selected': form.profileId === profile.id }">
+                                    <input type="radio" :value="profile.id" v-model="form.profileId" />
                                     <span class="profile-chip">{{ profile.name }}</span>
                                 </label>
                                 <p v-if="allProfiles.length === 0" class="profiles-empty">
@@ -151,11 +155,11 @@ const showFormModal = ref(false)
 const editing = ref<AdminUser | null>(null)
 const isSubmitting = ref(false)
 const formError = ref('')
-const form = reactive({ name: '', email: '', password: '', active: true, profiles: [] as string[] })
+const form = reactive({ name: '', email: '', password: '', active: true, profileId: '' })
 
 function openCreate() {
     editing.value = null
-    form.name = ''; form.email = ''; form.password = ''; form.active = true; form.profiles = []
+    form.name = ''; form.email = ''; form.password = ''; form.active = true; form.profileId = ''
     formError.value = ''
     showFormModal.value = true
 }
@@ -166,7 +170,7 @@ function openEdit(user: AdminUser) {
     form.email = user.email
     form.password = ''
     form.active = user.active
-    form.profiles = [...(user.profiles ?? [])]
+    form.profileId = user.profile?.id ?? ''
     formError.value = ''
     showFormModal.value = true
 }
@@ -178,12 +182,12 @@ async function submitForm() {
     isSubmitting.value = true
     try {
         if (editing.value) {
-            const payload = { name: form.name || undefined, email: form.email, active: form.active, profiles: form.profiles }
+            const payload = { name: form.name || undefined, email: form.email, active: form.active, profileId: form.profileId || undefined }
             const updated = await adminUsersService.update(editing.value.id, payload)
             const idx = users.value.findIndex(u => u.id === editing.value!.id)
             if (idx !== -1) users.value[idx] = updated
         } else {
-            const payload = { name: form.name || undefined, email: form.email, password: form.password, active: form.active, profiles: form.profiles }
+            const payload = { name: form.name || undefined, email: form.email, password: form.password, active: form.active, profileId: form.profileId || undefined }
             const created = await adminUsersService.create(payload)
             users.value.push(created)
         }

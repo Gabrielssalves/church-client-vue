@@ -12,11 +12,11 @@ export interface Profile {
 export interface CreateProfilePayload {
   name: string
   description?: string
-  scopes?: string[]
+  scopeIds?: string[]
 }
 
 export interface UpdateProfilePayload {
   name: string
   description?: string
-  scopes?: string[]
+  scopeIds?: string[]
 }

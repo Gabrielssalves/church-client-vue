@@ -242,6 +242,7 @@ export default {
     user_password_placeholder: '••••••••',
     user_active: 'Usuário ativo',
     user_profiles: 'Perfis',
+    user_no_profile: 'Nenhum',
     user_no_profiles: 'Nenhum perfil cadastrado.',
     user_confirm_delete: 'Tem certeza que deseja excluir o usuário {name}?',
   },
