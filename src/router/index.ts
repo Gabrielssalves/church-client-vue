@@ -34,19 +34,19 @@ const routes = [
     path: '/users',
     name: 'Users',
     component: () => import('@/features/users/UsersView.vue'),
-    meta: { requiresAuth: true, requiredScope: 'users', label: 'nav.users', icon: 'users' },
+    meta: { requiresAuth: true, requiredScope: 'user', label: 'nav.users', icon: 'users' },
   },
   {
     path: '/skills',
     name: 'Skills',
     component: () => import('@/features/skills/SkillsView.vue'),
-    meta: { requiresAuth: true, requiredScope: 'skills', label: 'nav.skills', icon: 'skills' },
+    meta: { requiresAuth: true, requiredScope: 'skill', label: 'nav.skills', icon: 'skills' },
   },
   {
     path: '/schedules',
     name: 'Schedules',
     component: () => import('@/features/schedules/SchedulesView.vue'),
-    meta: { requiresAuth: true, requiredScope: 'schedules', label: 'nav.schedules', icon: 'schedules' },
+    meta: { requiresAuth: true, requiredScope: 'schedule', label: 'nav.schedules', icon: 'schedules' },
   },
   {
     path: '/profile',
