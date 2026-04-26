@@ -141,7 +141,7 @@ import type { Skill } from '@/features/skills/types/Skill'
 import { useScope } from '@/composables/useScope'
 
 const { t } = useI18n()
-const { canRead, canWrite, canDelete } = useScope('users')
+const { canRead, canWrite, canDelete } = useScope('user')
 
 const isLoading = ref(true)
 const users = ref<User[]>([])
