@@ -4,7 +4,7 @@ import { useAuthStore } from '@/stores/authStore'
 export function useScope(resource: string) {
   const authStore = useAuthStore()
 
-  const scopes = computed(() => authStore.user?.scopes ?? [])
+  const scopes = computed(() => authStore.user?.claims ?? [])
 
   const canRead = computed(() =>
     authStore.isAdmin ||
