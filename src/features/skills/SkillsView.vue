@@ -109,7 +109,7 @@ import { SKILL_COLORS, type Skill, type SkillColor } from '@/features/skills/typ
 import { useScope } from '@/composables/useScope'
 
 const { t } = useI18n()
-const { canRead, canWrite, canDelete } = useScope('skills')
+const { canRead, canWrite, canDelete } = useScope('skill')
 
 const isLoading = ref(true)
 const skills = ref<Skill[]>([])
