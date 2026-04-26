@@ -259,7 +259,7 @@ import type { User } from '@/features/users/types/User'
 import { useScope } from '@/composables/useScope'
 
 const { t, locale } = useI18n()
-const { canRead, canWrite, canDelete } = useScope('schedules')
+const { canRead, canWrite, canDelete } = useScope('schedule')
 
 const DAYS_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 
