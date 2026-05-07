@@ -33,6 +33,9 @@
                     <div class="schedule-info">
                         <h3>{{ schedule.name }}</h3>
                         <p class="schedule-date">{{ formatDate(schedule.date) }}</p>
+                        <p v-if="schedule.startTime || schedule.endTime" class="schedule-time">
+                            {{ schedule.startTime ?? '—' }} – {{ schedule.endTime ?? '—' }}
+                        </p>
                     </div>
                     <div class="schedule-card__meta-actions">
                         <span class="assigned-pill">{{ schedule.users.length }} {{ t('schedules.musicians_count') }}</span>
@@ -73,6 +76,16 @@
                             <label>{{ t('schedules.date_label') }}</label>
                             <input v-model="createForm.date" type="date" required />
                         </div>
+                        <div class="fields-row">
+                            <div class="field">
+                                <label>{{ t('schedules.start_time') }}</label>
+                                <input v-model="createForm.startTime" type="time" :placeholder="t('schedules.time_placeholder')" />
+                            </div>
+                            <div class="field">
+                                <label>{{ t('schedules.end_time') }}</label>
+                                <input v-model="createForm.endTime" type="time" :placeholder="t('schedules.time_placeholder')" />
+                            </div>
+                        </div>
                         <p v-if="createError" class="form-error">{{ createError }}</p>
                         <div class="modal__footer">
                             <BaseButton variant="secondary" type="button" @click="showCreateModal = false">{{ t('common.cancel') }}</BaseButton>
@@ -99,6 +112,16 @@
                         <div class="field">
                             <label>{{ t('schedules.date_label') }}</label>
                             <input v-model="editForm.date" type="date" required />
+                        </div>
+                        <div class="fields-row">
+                            <div class="field">
+                                <label>{{ t('schedules.start_time') }}</label>
+                                <input v-model="editForm.startTime" type="time" :placeholder="t('schedules.time_placeholder')" />
+                            </div>
+                            <div class="field">
+                                <label>{{ t('schedules.end_time') }}</label>
+                                <input v-model="editForm.endTime" type="time" :placeholder="t('schedules.time_placeholder')" />
+                            </div>
                         </div>
                         <p v-if="editError" class="form-error">{{ editError }}</p>
                         <div class="modal__footer">
@@ -187,6 +210,17 @@
                             </div>
                         </div>
 
+                        <div class="fields-row">
+                            <div class="field">
+                                <label>{{ t('schedules.start_time') }}</label>
+                                <input v-model="genForm.startTime" type="time" :placeholder="t('schedules.time_placeholder')" />
+                            </div>
+                            <div class="field">
+                                <label>{{ t('schedules.end_time') }}</label>
+                                <input v-model="genForm.endTime" type="time" :placeholder="t('schedules.time_placeholder')" />
+                            </div>
+                        </div>
+
                         <div class="field">
                             <label>{{ t('schedules.days_of_week') }}</label>
                             <div class="days-grid">
@@ -228,6 +262,78 @@
                             </div>
                         </div>
 
+                        <!-- Groups -->
+                        <div class="field">
+                            <div class="skill-configs-header">
+                                <div>
+                                    <label>{{ t('schedules.groups_label') }}</label>
+                                    <p class="section-desc">{{ t('schedules.groups_desc') }}</p>
+                                </div>
+                                <button type="button" class="add-skill-btn" @click="addGroup">{{ t('schedules.add_group') }}</button>
+                            </div>
+                            <div class="skill-configs-list">
+                                <div v-for="(group, gIdx) in genForm.groups" :key="gIdx" class="group-block">
+                                    <div class="group-block__header">
+                                        <span class="group-label">{{ t('schedules.group_n', { n: gIdx + 1 }) }}</span>
+                                        <button type="button" class="remove-config-btn" @click="removeGroup(gIdx)">×</button>
+                                    </div>
+                                    <div class="group-users">
+                                        <div v-for="(_, uIdx) in group.userIds" :key="uIdx" class="group-user-row">
+                                            <select v-model="group.userIds[uIdx]" class="skill-select">
+                                                <option value="" disabled>{{ t('schedules.select_user') }}</option>
+                                                <option v-for="user in allUsers" :key="user.id" :value="user.id">
+                                                    {{ user.name }}
+                                                </option>
+                                            </select>
+                                            <button type="button" class="remove-config-btn" @click="removeGroupUser(gIdx, uIdx)">×</button>
+                                        </div>
+                                        <button type="button" class="add-group-user-btn" @click="addGroupUser(gIdx)">{{ t('schedules.add_user_to_group') }}</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reservations -->
+                        <div class="field">
+                            <div class="skill-configs-header">
+                                <div>
+                                    <label>{{ t('schedules.reservations_label') }}</label>
+                                    <p class="section-desc">{{ t('schedules.reservations_desc') }}</p>
+                                </div>
+                                <button type="button" class="add-skill-btn" @click="addReservation">{{ t('schedules.add_reservation') }}</button>
+                            </div>
+                            <div class="skill-configs-list">
+                                <div v-for="(res, rIdx) in genForm.reservations" :key="rIdx" class="skill-config-row reservation-row">
+                                    <div class="field field--inline">
+                                        <label>{{ t('schedules.week_of_month') }}</label>
+                                        <input v-model.number="res.weekOfMonth" type="number" min="1" max="5" required class="week-input" />
+                                    </div>
+                                    <div class="field field--inline">
+                                        <label>{{ t('schedules.day_of_week_label') }}</label>
+                                        <select v-model="res.dayOfWeek" required class="skill-select">
+                                            <option value="" disabled>—</option>
+                                            <option v-for="day in DAYS_OF_WEEK" :key="day" :value="day">{{ t(`days.${day}`) }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="field field--inline">
+                                        <label>{{ t('schedules.musician_label') }}</label>
+                                        <select v-model="res.userId" required class="skill-select">
+                                            <option value="" disabled>{{ t('schedules.select_user') }}</option>
+                                            <option v-for="user in allUsers" :key="user.id" :value="user.id">{{ user.name }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="field field--inline">
+                                        <label>{{ t('common.skill') }}</label>
+                                        <select v-model="res.skillId" required class="skill-select">
+                                            <option value="" disabled>{{ t('schedules.select_skill') }}</option>
+                                            <option v-for="skill in allSkills" :key="skill.id" :value="skill.id">{{ skill.name }}</option>
+                                        </select>
+                                    </div>
+                                    <button type="button" class="remove-config-btn" @click="removeReservation(rIdx)">×</button>
+                                </div>
+                            </div>
+                        </div>
+
                         <p v-if="generateError" class="form-error">{{ generateError }}</p>
                         <p v-if="generateSuccess" class="form-success">{{ generateSuccess }}</p>
 
@@ -253,7 +359,7 @@ import AppIcon from '@/components/ui/AppIcon.vue'
 import { schedulesService } from '@/services/schedulesService'
 import { skillsService } from '@/services/skillsService'
 import { usersService } from '@/services/usersService'
-import type { Schedule, SkillConfig } from '@/features/schedules/types/Schedule'
+import type { Schedule, SkillConfig, UserGroup, ScheduleReservation } from '@/features/schedules/types/Schedule'
 import type { Skill } from '@/features/skills/types/Skill'
 import type { User } from '@/features/users/types/User'
 import { useScope } from '@/composables/useScope'
@@ -315,11 +421,13 @@ onMounted(loadData)
 const showCreateModal = ref(false)
 const isSubmitting = ref(false)
 const createError = ref('')
-const createForm = reactive({ name: '', date: '' })
+const createForm = reactive({ name: '', date: '', startTime: '', endTime: '' })
 
 function openCreate() {
     createForm.name = ''
     createForm.date = ''
+    createForm.startTime = ''
+    createForm.endTime = ''
     createError.value = ''
     showCreateModal.value = true
 }
@@ -328,7 +436,12 @@ async function submitCreate() {
     createError.value = ''
     isSubmitting.value = true
     try {
-        const created = await schedulesService.create({ name: createForm.name, date: createForm.date })
+        const created = await schedulesService.create({
+            name: createForm.name,
+            date: createForm.date,
+            ...(createForm.startTime ? { startTime: createForm.startTime } : {}),
+            ...(createForm.endTime ? { endTime: createForm.endTime } : {}),
+        })
         schedules.value.push(created)
         showCreateModal.value = false
     } catch (err: unknown) {
@@ -342,12 +455,14 @@ async function submitCreate() {
 const showEditModal = ref(false)
 const editingSchedule = ref<Schedule | null>(null)
 const editError = ref('')
-const editForm = reactive({ name: '', date: '' })
+const editForm = reactive({ name: '', date: '', startTime: '', endTime: '' })
 
 function openEdit(schedule: Schedule) {
     editingSchedule.value = schedule
     editForm.name = schedule.name
     editForm.date = isoDate(schedule.date)
+    editForm.startTime = schedule.startTime ?? ''
+    editForm.endTime = schedule.endTime ?? ''
     editError.value = ''
     showEditModal.value = true
 }
@@ -357,7 +472,12 @@ async function submitEdit() {
     editError.value = ''
     isSubmitting.value = true
     try {
-        const updated = await schedulesService.update(editingSchedule.value.id, { name: editForm.name, date: editForm.date })
+        const updated = await schedulesService.update(editingSchedule.value.id, {
+            name: editForm.name,
+            date: editForm.date,
+            startTime: editForm.startTime || undefined,
+            endTime: editForm.endTime || undefined,
+        })
         const idx = schedules.value.findIndex(s => s.id === editingSchedule.value!.id)
         if (idx !== -1) schedules.value[idx] = updated
         showEditModal.value = false
@@ -462,15 +582,23 @@ const generateSuccess = ref('')
 const genForm = reactive<{
     startDate: string
     endDate: string
+    startTime: string
+    endTime: string
     daysOfWeek: string[]
     skillConfigs: SkillConfig[]
-}>({ startDate: '', endDate: '', daysOfWeek: [], skillConfigs: [] })
+    groups: UserGroup[]
+    reservations: ScheduleReservation[]
+}>({ startDate: '', endDate: '', startTime: '', endTime: '', daysOfWeek: [], skillConfigs: [], groups: [], reservations: [] })
 
 function openGenerate() {
     genForm.startDate = ''
     genForm.endDate = ''
+    genForm.startTime = ''
+    genForm.endTime = ''
     genForm.daysOfWeek = []
     genForm.skillConfigs = []
+    genForm.groups = []
+    genForm.reservations = []
     generateError.value = ''
     generateSuccess.value = ''
     showGenerateModal.value = true
@@ -486,6 +614,30 @@ function removeSkillConfig(idx: number) {
     genForm.skillConfigs.splice(idx, 1)
 }
 
+function addGroup() {
+    genForm.groups.push({ userIds: [''] })
+}
+
+function removeGroup(idx: number) {
+    genForm.groups.splice(idx, 1)
+}
+
+function addGroupUser(gIdx: number) {
+    genForm.groups[gIdx].userIds.push('')
+}
+
+function removeGroupUser(gIdx: number, uIdx: number) {
+    genForm.groups[gIdx].userIds.splice(uIdx, 1)
+}
+
+function addReservation() {
+    genForm.reservations.push({ weekOfMonth: 1, dayOfWeek: '', userId: '', skillId: '' })
+}
+
+function removeReservation(idx: number) {
+    genForm.reservations.splice(idx, 1)
+}
+
 async function submitGenerate() {
     generateError.value = ''
     generateSuccess.value = ''
@@ -494,11 +646,19 @@ async function submitGenerate() {
 
     isGenerating.value = true
     try {
+        const validGroups = genForm.groups
+            .map(g => ({ userIds: g.userIds.filter(id => id) }))
+            .filter(g => g.userIds.length >= 2)
+
         await schedulesService.generate({
             startDate: genForm.startDate,
             endDate: genForm.endDate,
             daysOfWeek: genForm.daysOfWeek,
             skillConfigs: genForm.skillConfigs,
+            ...(genForm.startTime ? { startTime: genForm.startTime } : {}),
+            ...(genForm.endTime ? { endTime: genForm.endTime } : {}),
+            ...(validGroups.length ? { groups: validGroups } : {}),
+            ...(genForm.reservations.length ? { reservations: genForm.reservations } : {}),
         })
         generateSuccess.value = t('schedules.generate_success')
         schedules.value = await schedulesService.getAll()
@@ -627,6 +787,12 @@ h1 {
     color: var(--color-text-light);
     font-size: 0.9rem;
     text-transform: capitalize;
+}
+
+.schedule-time {
+    margin: 2px 0 0;
+    color: var(--color-text-light);
+    font-size: 0.85rem;
 }
 
 .schedule-card__meta-actions {
@@ -918,6 +1084,75 @@ h1 {
     color: #16a34a;
     font-size: 0.88rem;
     font-weight: 600;
+}
+
+.section-desc {
+    margin: 2px 0 0;
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    font-weight: 400;
+}
+
+.group-block {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.group-block__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.group-label {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.group-users {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.group-user-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.add-group-user-btn {
+    background: none;
+    border: 1px dashed var(--color-primary);
+    color: var(--color-primary);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: fit-content;
+    transition: background 0.15s;
+}
+
+.add-group-user-btn:hover { background: #dcfce7; }
+
+.reservation-row {
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.week-input {
+    width: 64px;
+    padding: 9px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    text-align: center;
 }
 
 @media (max-width: 920px) {

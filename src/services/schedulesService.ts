@@ -12,12 +12,12 @@ export const schedulesService = {
     return res.data
   },
 
-  async create(payload: { name: string; date: string }): Promise<Schedule> {
+  async create(payload: { name: string; date: string; startTime?: string; endTime?: string }): Promise<Schedule> {
     const res = await apiHttpClient.post<Schedule>('/schedules/manual', payload)
     return res.data
   },
 
-  async update(id: string, payload: { name?: string; date?: string }): Promise<Schedule> {
+  async update(id: string, payload: { name?: string; date?: string; startTime?: string; endTime?: string }): Promise<Schedule> {
     const res = await apiHttpClient.put<Schedule>(`/schedules/${id}`, payload)
     return res.data
   },
