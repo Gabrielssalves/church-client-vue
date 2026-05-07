@@ -623,11 +623,11 @@ function removeGroup(idx: number) {
 }
 
 function addGroupUser(gIdx: number) {
-    genForm.groups[gIdx].userIds.push('')
+    genForm.groups[gIdx]?.userIds.push('')
 }
 
 function removeGroupUser(gIdx: number, uIdx: number) {
-    genForm.groups[gIdx].userIds.splice(uIdx, 1)
+    genForm.groups[gIdx]?.userIds.splice(uIdx, 1)
 }
 
 function addReservation() {
